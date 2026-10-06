@@ -11,16 +11,31 @@ function useDeferredVideo(source: string, mobileSource?: string) {
     const connection = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } }).connection;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || connection?.saveData || ["slow-2g", "2g"].includes(connection?.effectiveType ?? "")) return;
 
+    const mobileViewport = window.matchMedia("(max-width: 767px)");
+    let isVisible = false;
+    const syncSource = () => {
+      const nextSource = mobileSource && mobileViewport.matches ? mobileSource : source;
+      if (node.getAttribute("src") === nextSource) return;
+      node.src = nextSource;
+      node.load();
+      if (isVisible) void node.play().catch(() => {});
+    };
+
     const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        if (!node.getAttribute("src")) node.src = mobileSource && window.matchMedia("(max-width: 767px)").matches ? mobileSource : source;
+      isVisible = entry.isIntersecting;
+      if (isVisible) {
+        syncSource();
         void node.play().catch(() => {});
       } else {
         node.pause();
       }
     }, { rootMargin: "80px" });
     observer.observe(node);
-    return () => observer.disconnect();
+    mobileViewport.addEventListener("change", syncSource);
+    return () => {
+      observer.disconnect();
+      mobileViewport.removeEventListener("change", syncSource);
+    };
   }, [source, mobileSource]);
 
   return videoRef;

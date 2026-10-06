@@ -200,7 +200,7 @@ export default function InvoicesPage() {
         <Card>
           <CardBody className="p-0">
             <div className="divide-y divide-foreground/10 md:hidden">
-              {visible.map((inv) => <div key={inv.id} className="space-y-3 p-4 text-sm"><div className="flex items-start justify-between gap-3"><label className="flex items-center gap-2 font-semibold"><input type="checkbox" checked={selected.has(inv.id)} onChange={() => toggleOne(inv.id)} aria-label={`Select ${inv.number}`} /><Link href={`/app/invoices/${inv.id}`} className="hover:text-fuchsia-300">{inv.number}</Link></label><Badge status={inv.status} /></div><p className="text-foreground/65">{customers[inv.customerId]?.name || "Unknown customer"} · Due {formatDate(inv.dueDate)}</p><div className="flex items-end justify-between gap-3"><span className="text-foreground/50">Amount {formatMoney(inv.amount, inv.currency)}</span><strong>Due {formatMoney(inv.balance, inv.currency)}</strong></div><div className="flex justify-end"><Link href={`/app/invoices/${inv.id}`} className="inline-flex items-center gap-1.5 rounded-full border border-foreground/15 px-3 py-1.5 text-xs font-semibold transition hover:border-[#111184]/45 hover:bg-[#111184]/10"><Eye size={14} /> View</Link></div></div>)}
+              {visible.map((inv) => <div key={inv.id} className="invoice-dark-text space-y-3 p-4 text-sm"><div className="flex items-start justify-between gap-3"><label className="flex items-center gap-2 font-semibold"><input type="checkbox" checked={selected.has(inv.id)} onChange={() => toggleOne(inv.id)} aria-label={`Select ${inv.number}`} /><Link href={`/app/invoices/${inv.id}`} className="hover:text-fuchsia-300">{inv.number}</Link></label><Badge status={inv.status} /></div><p className="text-foreground/65">{customers[inv.customerId]?.name || "Unknown customer"} · Due {formatDate(inv.dueDate)}</p><div className="flex items-end justify-between gap-3"><span className="text-foreground/50">Amount {formatMoney(inv.amount, inv.currency)}</span><strong>Due {formatMoney(inv.balance, inv.currency)}</strong></div><div className="flex justify-end"><Link href={`/app/invoices/${inv.id}`} className="inline-flex items-center gap-1.5 rounded-full border border-foreground/15 px-3 py-1.5 text-xs font-semibold transition hover:border-[#111184]/45 hover:bg-[#111184]/10"><Eye size={14} /> View</Link></div></div>)}
             </div>
             <div className="hidden overflow-x-auto md:block">
               <table className="w-full min-w-[800px] text-left text-sm">
@@ -225,7 +225,7 @@ export default function InvoicesPage() {
                 </thead>
                 <tbody>
                   {visible.map((inv) => (
-                    <tr key={inv.id} className="border-b border-foreground/5 hover:bg-foreground/[0.02]">
+                    <tr key={inv.id} className="invoice-dark-text border-b border-foreground/5 hover:bg-foreground/[0.02]">
                       <td className="px-5 py-3">
                         <input
                           type="checkbox"

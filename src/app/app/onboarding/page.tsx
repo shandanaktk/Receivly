@@ -150,12 +150,14 @@ export default function OnboardingPage() {
           </div>
         </nav>
 
-        <div className="flex min-h-0 flex-1 items-center justify-center py-3 sm:py-4">
+        <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-3 py-3 sm:gap-4 sm:py-4">
+          <h1 className="onboarding-step-heading shrink-0 text-center text-3xl leading-none sm:text-4xl" aria-live="polite">
+            {STEPS[step].title}
+          </h1>
           <Card className="onboarding-card mx-auto w-full max-w-3xl overflow-hidden border-[#111184]/15 shadow-[0_24px_80px_rgba(17,17,132,.10)]">
             <CardBody className="p-4 sm:p-6 lg:p-7">
               <div className="relative mb-5 px-12 text-center">
                 <p className="text-[10px] font-bold uppercase tracking-[.2em] text-[#5f5fd5]">Step {String(step + 1).padStart(2, "0")} of {String(STEPS.length).padStart(2, "0")}</p>
-                <h1 className="mt-1 text-3xl leading-none sm:text-4xl">{STEPS[step].title}</h1>
                 <p className="mt-1.5 text-sm text-foreground/55">{STEPS[step].caption}</p>
                 <div className="step-number step-number-corner absolute right-0 top-0 text-4xl leading-none sm:text-5xl">{String(step + 1).padStart(2, "0")}</div>
               </div>
