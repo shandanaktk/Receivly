@@ -127,6 +127,31 @@ export const mockApi = {
 
   async getWorkspace() {
     await delay();
+    if (typeof window !== "undefined" && !workspace.gmailEmail) {
+      const saved = window.localStorage.getItem("receivly_gmail");
+      if (saved) {
+        try {
+          const email = JSON.parse(saved).email;
+          if (typeof email === "string" && email.includes("@")) workspace = { ...workspace, gmailEmail: email };
+        } catch { /* ignore a bad saved account */ }
+      }
+    }
+    return workspace;
+  },
+
+  async connectGmail(email: string) {
+    await delay();
+    const gmailEmail = email.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(gmailEmail)) throw new Error("Enter a valid Gmail address.");
+    workspace = { ...workspace, gmailEmail };
+    if (typeof window !== "undefined") window.localStorage.setItem("receivly_gmail", JSON.stringify({ email: gmailEmail }));
+    return workspace;
+  },
+
+  async disconnectGmail() {
+    await delay();
+    workspace = { ...workspace, gmailEmail: undefined };
+    if (typeof window !== "undefined") window.localStorage.removeItem("receivly_gmail");
     return workspace;
   },
 
@@ -310,10 +335,40 @@ export const mockApi = {
     await delay();
     const invoice = invoices.find((i) => i.id === id);
     if (!invoice || invoice.status !== "draft") throw new Error("Only draft invoices can be sent from this demo.");
+    if (!workspace.gmailEmail) throw new Error("Connect the Gmail account you want to send invoices from.");
+    const customer = customers.find((item) => item.id === invoice.customerId);
+    const amount = new Intl.NumberFormat("en-US", { style: "currency", currency: invoice.currency }).format(invoice.balance);
+    const subject = `Invoice ${invoice.number} from ${workspace.companyName}`;
+    const body = `Hi ${customer?.primaryContact || "there"},\n\nInvoice ${invoice.number} for ${amount} is ready. It is due ${invoice.dueDate}.${invoice.paymentLink ? ` Pay here: ${invoice.paymentLink}` : ""}\n\n${workspace.signature}`;
+    this.recordOutboundEmail({ invoice, subject, body, stage: "invoice", aiGenerated: false });
     const updated: Invoice = { ...invoice, status: "sent", updatedAt: new Date().toISOString() };
     invoices = invoices.map((i) => i.id === id ? updated : i);
-    timeline = [{ id: `tl_${Date.now()}`, invoiceId: id, type: "sent", title: "Invoice send simulated", description: "No email was delivered in this frontend demo.", actor: "Demo user", createdAt: new Date().toISOString() }, ...timeline];
+    timeline = [{ id: `tl_${Date.now()}`, invoiceId: id, type: "sent", title: "Invoice sent with Gmail", description: `From ${workspace.gmailEmail} to ${customer?.email || "the customer"}. No email left this demo.`, actor: "Demo user", createdAt: new Date().toISOString() }, ...timeline];
     return updated;
+  },
+
+  async sendCollectorReminder(invoiceId: string, input: { subject: string; body: string; stage: "upcoming" | "due" | "overdue" }) {
+    await delay();
+    if (!workspace.aiCollectorActive) throw new Error("The AI Collector is paused.");
+    if (!workspace.gmailEmail) throw new Error("Connect the Gmail account these reminders send from.");
+    const invoice = invoices.find((item) => item.id === invoiceId);
+    if (!invoice || invoice.balance <= 0 || ["draft", "paid", "void", "written_off"].includes(invoice.status)) throw new Error("This invoice is not open for collection.");
+    if (invoice.collectorPaused) throw new Error("The collector is paused on this invoice.");
+    this.recordOutboundEmail({ invoice, subject: input.subject, body: input.body, stage: input.stage, aiGenerated: true });
+    timeline = [{ id: `tl_${Date.now()}`, invoiceId, type: "reminder", title: "AI reminder queued", description: `Sent with Gmail from ${workspace.gmailEmail}. No email left this demo.`, actor: "AI Collector", createdAt: new Date().toISOString() }, ...timeline];
+    return conversations.find((item) => item.invoiceId === invoiceId)!;
+  },
+
+  recordOutboundEmail({ invoice, subject, body, stage, aiGenerated }: { invoice: Invoice; subject: string; body: string; stage: "invoice" | "upcoming" | "due" | "overdue"; aiGenerated: boolean }) {
+    const now = new Date().toISOString();
+    const existing = conversations.find((item) => item.invoiceId === invoice.id);
+    const conversationId = existing?.id || `conv_${Date.now()}`;
+    const message = { id: `msg_${Date.now()}`, conversationId, direction: "outbound" as const, channel: "email" as const, subject, body, status: "sent" as const, createdAt: now, aiGenerated, viaGmail: true, stage };
+    if (existing) {
+      conversations = conversations.map((item) => item.id === existing.id ? { ...item, subject, lastMessageAt: now, messages: [...item.messages, message] } : item);
+      return;
+    }
+    conversations = [{ id: conversationId, workspaceId: workspace.id, customerId: invoice.customerId, invoiceId: invoice.id, subject, unread: false, needsApproval: false, disputed: false, paymentClaimed: false, failed: false, promiseMissed: false, lowConfidence: false, lastMessageAt: now, messages: [message], internalNotes: [] }, ...conversations];
   },
 
   async voidInvoice(id: string) {
@@ -400,7 +455,7 @@ export const mockApi = {
     await delay();
     const approval = approvals.find((a) => a.id === id);
     if (!approval) throw new Error("Approval item not found.");
-    conversations = conversations.map((c) => c.id === approval.conversationId ? { ...c, needsApproval: false, messages: c.messages.some((m) => m.status === "draft") ? c.messages.map((m) => m.status === "draft" ? { ...m, body: body || m.body, status: action === "reject" ? "draft" as const : "sent" as const, requiresApproval: false } : m) : action === "reject" ? c.messages : [...c.messages, { id: `msg_${Date.now()}`, conversationId: c.id, direction: "outbound" as const, channel: "email" as const, body: body || approval.draftBody, status: "sent" as const, createdAt: new Date().toISOString() }] } : c);
+    conversations = conversations.map((c) => c.id === approval.conversationId ? { ...c, needsApproval: false, messages: c.messages.some((m) => m.status === "draft") ? c.messages.map((m) => m.status === "draft" ? { ...m, body: body || m.body, status: action === "reject" ? "draft" as const : "sent" as const, viaGmail: action !== "reject", requiresApproval: false } : m) : action === "reject" ? c.messages : [...c.messages, { id: `msg_${Date.now()}`, conversationId: c.id, direction: "outbound" as const, channel: "email" as const, body: body || approval.draftBody, status: "sent" as const, viaGmail: true, createdAt: new Date().toISOString() }] } : c);
     approvals = approvals.filter((a) => a.id !== id);
     auditLogs = [{ id: `audit_${Date.now()}`, workspaceId: workspace.id, user: "Demo user", action: `approval.${action}`, entity: approval.invoiceId, date: new Date().toISOString() }, ...auditLogs];
     return { ok: true };
@@ -414,7 +469,7 @@ export const mockApi = {
 
   async sendConversationDraft(id: string, body: string) {
     await delay();
-    conversations = conversations.map((c) => c.id === id ? { ...c, needsApproval: false, messages: c.messages.some((m) => m.status === "draft") ? c.messages.map((m) => m.status === "draft" ? { ...m, body, status: "sent" as const } : m) : [...c.messages, { id: `msg_${Date.now()}`, conversationId: id, direction: "outbound" as const, channel: "email" as const, body, status: "sent" as const, createdAt: new Date().toISOString() }] } : c);
+    conversations = conversations.map((c) => c.id === id ? { ...c, needsApproval: false, messages: c.messages.some((m) => m.status === "draft") ? c.messages.map((m) => m.status === "draft" ? { ...m, body, status: "sent" as const, viaGmail: true } : m) : [...c.messages, { id: `msg_${Date.now()}`, conversationId: id, direction: "outbound" as const, channel: "email" as const, body, status: "sent" as const, viaGmail: true, createdAt: new Date().toISOString() }] } : c);
     return this.getConversation(id);
   },
 

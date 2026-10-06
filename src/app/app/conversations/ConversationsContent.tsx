@@ -1,12 +1,14 @@
 "use client";
 
+import { GmailConnect } from "@/components/app/GmailConnect";
+import { GmailLogo } from "@/components/app/GmailLogo";
 import { Badge } from "@/components/ui/Badge";
 import { Card, CardBody } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { PageLoader } from "@/components/ui/Spinner";
 import { api } from "@/lib/api";
 import { formatRelative, statusLabel } from "@/lib/format";
-import type { Conversation, ConversationFilter } from "@/types";
+import type { Conversation, ConversationFilter, Customer } from "@/types";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
@@ -27,12 +29,16 @@ export function ConversationsContent() {
   const initialFilter = (searchParams.get("filter") as ConversationFilter) || "all";
   const [filter, setFilter] = useState<ConversationFilter>(initialFilter);
   const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [customers, setCustomers] = useState<Record<string, Customer>>({});
+  const [gmailEmail, setGmailEmail] = useState<string | undefined>();
   const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {
     setLoading(true);
-    const list = await api.getConversations(filter);
+    const [list, people, workspace] = await Promise.all([api.getConversations(filter), api.getCustomers(), api.getWorkspace()]);
     setConversations(list);
+    setCustomers(Object.fromEntries(people.map((customer) => [customer.id, customer])));
+    setGmailEmail(workspace.gmailEmail);
     setLoading(false);
   }, [filter]);
 
@@ -44,8 +50,9 @@ export function ConversationsContent() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-semibold">Conversations</h1>
-        <p className="text-sm text-foreground/55">Unified inbox for collection threads</p>
+        <p className="text-sm text-foreground/55">Gmail threads for unpaid and late invoices, including emails AI sends automatically.</p>
       </div>
+      <GmailConnect email={gmailEmail} onChange={setGmailEmail} />
 
       <div className="flex gap-2 overflow-x-auto pb-1">
         {FILTERS.map((f) => (
@@ -90,16 +97,18 @@ export function ConversationsContent() {
                       <td className="px-5 py-3">
                         <Link
                           href={`/app/conversations/${c.id}`}
-                          className={`font-medium hover:text-fuchsia-300 ${c.unread ? "text-foreground" : "text-foreground/70"}`}
+                          className={`inline-flex items-center gap-2 font-medium hover:text-fuchsia-300 ${c.unread ? "text-foreground" : "text-foreground/70"}`}
                         >
+                          {c.messages.some((message) => message.viaGmail) ? <GmailLogo size={16} /> : null}
                           {c.subject}
                           {c.unread ? (
-                            <span className="ml-2 inline-block h-2 w-2 rounded-full bg-fuchsia-400" />
+                            <span className="inline-block h-2 w-2 rounded-full bg-fuchsia-400" />
                           ) : null}
                         </Link>
-                        {c.nextAction ? (
-                          <p className="text-xs text-foreground/45">{c.nextAction}</p>
-                        ) : null}
+                        <p className="text-xs text-foreground/45">
+                          {customers[c.customerId]?.name || "Customer"}
+                          {c.messages.some((message) => message.aiGenerated && message.viaGmail) ? ` · AI sent ${c.messages.filter((message) => message.aiGenerated && message.viaGmail).length} emails` : ""}
+                        </p>
                       </td>
                       <td className="px-5 py-3">
                         <div className="flex flex-wrap gap-1">

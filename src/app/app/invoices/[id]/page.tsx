@@ -1,5 +1,6 @@
 "use client";
 
+import { GmailConnect } from "@/components/app/GmailConnect";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
@@ -9,7 +10,7 @@ import { Select } from "@/components/ui/Select";
 import { PageLoader } from "@/components/ui/Spinner";
 import { api } from "@/lib/api";
 import { formatDate, formatMoney, formatRelative } from "@/lib/format";
-import type { Customer, Invoice, TeamMember, TimelineEvent } from "@/types";
+import type { Customer, Invoice, TeamMember, TimelineEvent, Workspace } from "@/types";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
@@ -18,6 +19,7 @@ export default function InvoiceDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const [invoice, setInvoice] = useState<Invoice | null>(null);
+  const [workspace, setWorkspace] = useState<Workspace | null>(null);
   const [customer, setCustomer] = useState<Customer | null>(null);
   const [timeline, setTimeline] = useState<TimelineEvent[]>([]);
   const [team, setTeam] = useState<TeamMember[]>([]);
@@ -31,11 +33,13 @@ export default function InvoiceDetailPage() {
   const load = useCallback(async () => {
     setLoading(true);
     const inv = await api.getInvoice(id);
-    const [cust, tl, members] = await Promise.all([
+    const [cust, tl, members, ws] = await Promise.all([
       api.getCustomer(inv.customerId),
       api.getTimeline(id),
       api.getTeam(),
+      api.getWorkspace(),
     ]);
+    setWorkspace(ws);
     setInvoice(inv);
     setCustomer(cust);
     setTimeline(tl);
@@ -69,8 +73,16 @@ export default function InvoiceDetailPage() {
   };
 
   const sendInvoice = async () => {
-    if (!window.confirm("Simulate sending this invoice? The status and timeline will update, but no email will be delivered.")) return;
-    try { setInvoice(await api.sendInvoice(id)); setTimeline(await api.getTimeline(id)); setMessage("Invoice send simulated. No email was delivered."); }
+    if (!workspace?.gmailEmail) { setError("Connect the Gmail account you want to send invoices from."); return; }
+    if (!window.confirm(`Send this invoice from ${workspace.gmailEmail} to ${customer?.email}? The demo records the email in Conversations. Nothing leaves the browser.`)) return;
+    try {
+      setInvoice(await api.sendInvoice(id));
+      setTimeline(await api.getTimeline(id));
+      const threads = await api.getConversations();
+      const thread = threads.find((item) => item.invoiceId === id);
+      setMessage(thread ? `Sent with Gmail. The email is in the conversation.` : "Sent with Gmail.");
+      if (thread) router.push(`/app/conversations/${thread.id}`);
+    }
     catch (err) { setError(err instanceof Error ? err.message : "Could not send invoice."); }
   };
 
@@ -142,7 +154,7 @@ export default function InvoiceDetailPage() {
               Public view
             </Button>
           </Link>
-          {invoice.status === "draft" && <Button size="sm" onClick={() => void sendInvoice()}>Simulate send</Button>}
+          {invoice.status === "draft" && <Button size="sm" onClick={() => void sendInvoice()}>Send invoice</Button>}
           <Button size="sm" variant="secondary" disabled={invoice.balance <= 0 || ["void", "written_off"].includes(invoice.status)} onClick={() => setPaymentOpen(true)}>
             Record payment
           </Button>
@@ -152,6 +164,8 @@ export default function InvoiceDetailPage() {
           {invoice.status === "draft" ? <Button size="sm" variant="danger" onClick={() => void deleteDraft()}>Delete draft</Button> : !["paid", "void"].includes(invoice.status) ? <Button size="sm" variant="outline" onClick={() => void voidInvoice()}>Void invoice</Button> : null}
         </div>
       </div>
+
+      {invoice.status === "draft" ? <GmailConnect email={workspace?.gmailEmail} onChange={(gmailEmail) => setWorkspace((current) => current ? { ...current, gmailEmail } : current)} /> : null}
 
       <div className="grid gap-4 sm:grid-cols-4">
         {[

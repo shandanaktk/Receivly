@@ -343,6 +343,11 @@ html[data-theme="dark"] .invoice-sheet { color: #1c2434 !important; background: 
 .invoice-sheet .invoice-faint { color: #64748b !important; }
 .invoice-sheet .invoice-ink { color: #0f172a !important; }
 .invoice-sheet .invoice-line { border-color: #e7e9f0; }
+.gmail-thread { background: #f6f8fc !important; color: #202124 !important; }
+.gmail-thread .gmail-card { background: #ffffff !important; color: #202124 !important; }
+.gmail-thread .gmail-muted { color: #5f6368 !important; }
+.gmail-thread .gmail-active { box-shadow: 0 0 0 2px #1a73e8; }
+
 .invoice-sheet .invoice-flash { animation: invoice-flash .7s ease; }
 @keyframes invoice-flash {
   0% { background-color: color-mix(in srgb, var(--sheet-accent) 16%, transparent); }

@@ -98,6 +98,7 @@ export interface Workspace {
   senderName: string;
   signature: string;
   replyTo: string;
+  gmailEmail?: string;
   escalationEmail: string;
   reminderTone: ReminderTone;
   autoSend: boolean;
@@ -232,6 +233,8 @@ export interface Message {
   createdAt: string;
   requiresApproval?: boolean;
   aiGenerated?: boolean;
+  viaGmail?: boolean;
+  stage?: "invoice" | "upcoming" | "due" | "overdue";
 }
 
 export interface Conversation {

@@ -1,5 +1,7 @@
 "use client";
 
+import { EmailThread } from "@/components/app/EmailThread";
+import { GmailConnect } from "@/components/app/GmailConnect";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
@@ -9,7 +11,7 @@ import { Select } from "@/components/ui/Select";
 import { PageLoader } from "@/components/ui/Spinner";
 import { api } from "@/lib/api";
 import { formatRelative, statusLabel } from "@/lib/format";
-import type { Conversation, ReplyCategory, TeamMember } from "@/types";
+import type { Conversation, Customer, Invoice, ReplyCategory, TeamMember, Workspace } from "@/types";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
@@ -17,6 +19,9 @@ import { useCallback, useEffect, useState } from "react";
 export default function ConversationDetailPage() {
   const { id } = useParams<{ id: string }>();
   const [conversation, setConversation] = useState<Conversation | null>(null);
+  const [customer, setCustomer] = useState<Customer | null>(null);
+  const [invoice, setInvoice] = useState<Invoice | null>(null);
+  const [workspace, setWorkspace] = useState<Workspace | null>(null);
   const [draft, setDraft] = useState("");
   const [note, setNote] = useState("");
   const [pauseReason, setPauseReason] = useState("");
@@ -31,7 +36,11 @@ export default function ConversationDetailPage() {
 
   const load = useCallback(async () => {
     setLoading(true);
-    const [c, members] = await Promise.all([api.getConversation(id), api.getTeam()]);
+    const c = await api.getConversation(id);
+    const [members, person, bill, ws] = await Promise.all([api.getTeam(), api.getCustomer(c.customerId), api.getInvoice(c.invoiceId), api.getWorkspace()]);
+    setCustomer(person);
+    setInvoice(bill);
+    setWorkspace(ws);
     setTeam(members.filter((m) => m.status === "active"));
     setConversation(c);
     setDraft(c.messages.find((m) => m.status === "draft")?.body || "");
@@ -100,6 +109,7 @@ export default function ConversationDetailPage() {
             ← Conversations
           </Link>
           <h1 className="mt-2 text-xl font-semibold">{conversation.subject}</h1>
+          <p className="mt-1 text-sm text-foreground/55">{customer?.name} · Invoice {invoice?.number} · every email on this invoice is below</p>
           <div className="mt-2 flex flex-wrap gap-2">
             {conversation.needsApproval ? <Badge status="medium">Needs approval</Badge> : null}
             {conversation.aiCategory ? (
@@ -128,35 +138,17 @@ export default function ConversationDetailPage() {
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-2">
-          <Card>
-            <CardHeader>
-              <h2 className="font-medium">Thread</h2>
-            </CardHeader>
-            <CardBody className="space-y-4">
-              {conversation.messages.map((msg) => (
-                <div
-                  key={msg.id}
-                  className={`rounded-xl border p-4 text-sm ${
-                    msg.direction === "inbound"
-                      ? "border-foreground/10 bg-foreground/[0.03]"
-                      : msg.direction === "internal"
-                        ? "border-amber-500/20 bg-amber-500/5"
-                        : "border-fuchsia-500/20 bg-fuchsia-500/5 ml-4 sm:ml-8"
-                  }`}
-                >
-                  <div className="mb-2 flex flex-wrap items-center gap-2 text-xs text-foreground/45">
-                    <span className="capitalize">{msg.direction}</span>
-                    <span>·</span>
-                    <span>{formatRelative(msg.createdAt)}</span>
-                    {msg.aiGenerated ? <Badge status="low">AI draft</Badge> : null}
-                    {msg.status === "draft" ? <Badge status="draft">Draft</Badge> : null}
-                  </div>
-                  {msg.subject ? <p className="mb-1 font-medium">{msg.subject}</p> : null}
-                  <p className="whitespace-pre-wrap text-foreground/80">{msg.body}</p>
-                </div>
-              ))}
-            </CardBody>
-          </Card>
+          <GmailConnect compact email={workspace?.gmailEmail} onChange={(gmailEmail) => setWorkspace((current) => current ? { ...current, gmailEmail } : current)} />
+          {customer && invoice && workspace ? (
+            <EmailThread
+              messages={conversation.messages}
+              invoiceNumber={invoice.number}
+              senderName={workspace.senderName}
+              fromEmail={workspace.gmailEmail || workspace.replyTo}
+              toName={customer.name}
+              toEmail={customer.email}
+            />
+          ) : null}
 
           {(
             <Card>
