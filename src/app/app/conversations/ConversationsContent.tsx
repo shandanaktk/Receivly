@@ -37,14 +37,14 @@ export function ConversationsContent() {
   }, [filter]);
 
   useEffect(() => {
-    void load();
+    void Promise.resolve().then(load);
   }, [load]);
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-semibold">Conversations</h1>
-        <p className="text-sm text-white/55">Unified inbox for collection threads</p>
+        <p className="text-sm text-foreground/55">Unified inbox for collection threads</p>
       </div>
 
       <div className="flex gap-2 overflow-x-auto pb-1">
@@ -55,8 +55,8 @@ export function ConversationsContent() {
             onClick={() => setFilter(f.value)}
             className={`shrink-0 rounded-full px-3 py-1.5 text-sm transition ${
               filter === f.value
-                ? "bg-gradient-to-r from-fuchsia-500/30 to-blue-600/30 text-white"
-                : "bg-white/5 text-white/60 hover:bg-white/10"
+                ? "bg-gradient-to-r from-fuchsia-500/30 to-blue-600/30 text-foreground"
+                : "bg-foreground/5 text-foreground/60 hover:bg-foreground/10"
             }`}
           >
             {f.label}
@@ -77,7 +77,7 @@ export function ConversationsContent() {
             <div className="-mx-4 overflow-x-auto md:mx-0">
               <table className="w-full min-w-[720px] text-left text-sm">
                 <thead>
-                  <tr className="border-b border-white/10 text-white/50">
+                  <tr className="border-b border-foreground/10 text-foreground/50">
                     <th className="px-5 py-3 font-medium">Subject</th>
                     <th className="px-5 py-3 font-medium">Flags</th>
                     <th className="px-5 py-3 font-medium">AI category</th>
@@ -86,11 +86,11 @@ export function ConversationsContent() {
                 </thead>
                 <tbody>
                   {conversations.map((c) => (
-                    <tr key={c.id} className="border-b border-white/5 hover:bg-white/[0.02]">
+                    <tr key={c.id} className="border-b border-foreground/5 hover:bg-foreground/[0.02]">
                       <td className="px-5 py-3">
                         <Link
                           href={`/app/conversations/${c.id}`}
-                          className={`font-medium hover:text-fuchsia-300 ${c.unread ? "text-white" : "text-white/70"}`}
+                          className={`font-medium hover:text-fuchsia-300 ${c.unread ? "text-foreground" : "text-foreground/70"}`}
                         >
                           {c.subject}
                           {c.unread ? (
@@ -98,7 +98,7 @@ export function ConversationsContent() {
                           ) : null}
                         </Link>
                         {c.nextAction ? (
-                          <p className="text-xs text-white/45">{c.nextAction}</p>
+                          <p className="text-xs text-foreground/45">{c.nextAction}</p>
                         ) : null}
                       </td>
                       <td className="px-5 py-3">
@@ -111,15 +111,15 @@ export function ConversationsContent() {
                           {c.lowConfidence ? <Badge status="low">Low conf.</Badge> : null}
                         </div>
                       </td>
-                      <td className="px-5 py-3 text-white/60">
+                      <td className="px-5 py-3 text-foreground/60">
                         {c.aiCategory ? statusLabel(c.aiCategory) : "—"}
                         {c.aiConfidence != null ? (
-                          <span className="ml-1 text-xs text-white/40">
+                          <span className="ml-1 text-xs text-foreground/40">
                             ({Math.round(c.aiConfidence * 100)}%)
                           </span>
                         ) : null}
                       </td>
-                      <td className="px-5 py-3 text-white/50">{formatRelative(c.lastMessageAt)}</td>
+                      <td className="px-5 py-3 text-foreground/50">{formatRelative(c.lastMessageAt)}</td>
                     </tr>
                   ))}
                 </tbody>

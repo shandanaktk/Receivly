@@ -39,9 +39,9 @@ export default function VerifyEmailPage() {
 
   if (!user) {
     return (
-      <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 sm:p-8 text-center">
+      <div className="rounded-2xl border border-foreground/10 bg-foreground/[0.03] p-6 sm:p-8 text-center">
         <h1 className="text-2xl font-semibold">Verify your email</h1>
-        <p className="mt-2 text-sm text-white/55">
+        <p className="mt-2 text-sm text-foreground/55">
           Sign up or log in first to verify your email address.
         </p>
         <Link href="/signup" className="mt-6 inline-block">
@@ -52,17 +52,17 @@ export default function VerifyEmailPage() {
   }
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 sm:p-8 text-center">
+    <div className="rounded-2xl border border-foreground/10 bg-foreground/[0.03] p-6 sm:p-8 text-center">
       <div
-        className="mx-auto flex h-14 w-14 items-center justify-center rounded-full border border-white/10 bg-white/[0.05] text-2xl"
+        className="mx-auto flex h-14 w-14 items-center justify-center rounded-full border border-foreground/10 bg-foreground/[0.05] text-2xl"
         aria-hidden
       >
         ✉
       </div>
       <h1 className="mt-5 text-2xl font-semibold tracking-tight">Verify your email</h1>
-      <p className="mt-2 text-sm text-white/55">
+      <p className="mt-2 text-sm text-foreground/55">
         We sent a verification link to{" "}
-        <strong className="text-white/80">{user.email}</strong>. In production, click the link in
+        <strong className="text-foreground/80">{user.email}</strong>. In production, click the link in
         your inbox. For this demo, use the button below.
       </p>
 
@@ -82,7 +82,7 @@ export default function VerifyEmailPage() {
         </Button>
       )}
 
-      <p className="mt-6 text-xs text-white/40">
+      <p className="mt-6 text-xs text-foreground/40">
         Didn&apos;t receive an email? Check spam or{" "}
         <button
           type="button"

@@ -41,7 +41,7 @@ export default function AdminAuditPage() {
   }, []);
 
   useEffect(() => {
-    load();
+    void Promise.resolve().then(load);
   }, [load]);
 
   const filtered = useMemo(() => {
@@ -74,7 +74,7 @@ export default function AdminAuditPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Audit log</h1>
-        <p className="mt-1 text-sm text-white/55">
+        <p className="mt-1 text-sm text-foreground/55">
           Immutable activity trail across workspaces — filter by tenant, user, action, entity, or date range.
         </p>
       </div>
@@ -126,16 +126,16 @@ export default function AdminAuditPage() {
             <Button variant="outline" size="sm" onClick={() => setFilters(EMPTY_FILTERS)}>
               Clear filters
             </Button>
-            <span className="self-center text-sm text-white/45">
+            <span className="self-center text-sm text-foreground/45">
               {filtered.length} of {logs.length} entries
             </span>
           </div>
         </CardBody>
       </Card>
 
-      <div className="hidden overflow-hidden rounded-2xl border border-white/10 md:block">
+      <div className="hidden overflow-hidden rounded-2xl border border-foreground/10 md:block">
         <table className="w-full text-left text-sm">
-          <thead className="border-b border-white/10 bg-white/[0.03] text-white/55">
+          <thead className="border-b border-foreground/10 bg-foreground/[0.03] text-foreground/55">
             <tr>
               <th className="px-4 py-3 font-medium">Date</th>
               <th className="px-4 py-3 font-medium">User</th>
@@ -147,8 +147,8 @@ export default function AdminAuditPage() {
           </thead>
           <tbody>
             {filtered.map((log) => (
-              <tr key={log.id} className="border-b border-white/5 hover:bg-white/[0.02]">
-                <td className="whitespace-nowrap px-4 py-3 text-white/70">
+              <tr key={log.id} className="border-b border-foreground/5 hover:bg-foreground/[0.02]">
+                <td className="whitespace-nowrap px-4 py-3 text-foreground/70">
                   {formatDate(log.date, "MMM d, yyyy h:mm a")}
                 </td>
                 <td className="px-4 py-3">{log.user}</td>
@@ -156,14 +156,14 @@ export default function AdminAuditPage() {
                   <Badge status="sent">{log.action}</Badge>
                 </td>
                 <td className="px-4 py-3 font-mono text-xs">{log.entity}</td>
-                <td className="px-4 py-3 text-white/60">{log.workspaceId || "—"}</td>
-                <td className="px-4 py-3 font-mono text-xs text-white/50">{log.ip || "—"}</td>
+                <td className="px-4 py-3 text-foreground/60">{log.workspaceId || "—"}</td>
+                <td className="px-4 py-3 font-mono text-xs text-foreground/50">{log.ip || "—"}</td>
               </tr>
             ))}
           </tbody>
         </table>
         {filtered.length === 0 ? (
-          <p className="px-4 py-8 text-center text-sm text-white/50">No audit entries match your filters.</p>
+          <p className="px-4 py-8 text-center text-sm text-foreground/50">No audit entries match your filters.</p>
         ) : null}
       </div>
 
@@ -173,21 +173,21 @@ export default function AdminAuditPage() {
             <CardBody className="space-y-2 text-sm">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <Badge status="sent">{log.action}</Badge>
-                <span className="text-xs text-white/45">
+                <span className="text-xs text-foreground/45">
                   {formatDate(log.date, "MMM d, h:mm a")}
                 </span>
               </div>
               <p>
-                <span className="text-white/55">Entity:</span> {log.entity}
+                <span className="text-foreground/55">Entity:</span> {log.entity}
               </p>
               <p>
-                <span className="text-white/55">User:</span> {log.user}
+                <span className="text-foreground/55">User:</span> {log.user}
               </p>
               <p>
-                <span className="text-white/55">Workspace:</span> {log.workspaceId || "—"}
+                <span className="text-foreground/55">Workspace:</span> {log.workspaceId || "—"}
               </p>
               {log.ip ? (
-                <p className="font-mono text-xs text-white/45">IP {log.ip}</p>
+                <p className="font-mono text-xs text-foreground/45">IP {log.ip}</p>
               ) : null}
             </CardBody>
           </Card>

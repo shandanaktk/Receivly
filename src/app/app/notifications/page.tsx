@@ -23,7 +23,7 @@ export default function NotificationsPage() {
   }, []);
 
   useEffect(() => {
-    void load();
+    void Promise.resolve().then(load);
   }, [load]);
 
   const markRead = async (id: string) => {
@@ -44,7 +44,7 @@ export default function NotificationsPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-semibold">Notifications</h1>
-          <p className="text-sm text-white/55">
+          <p className="text-sm text-foreground/55">
             {unreadCount} unread
           </p>
         </div>
@@ -62,7 +62,7 @@ export default function NotificationsPage() {
             type="button"
             onClick={() => setFilter(f)}
             className={`rounded-full px-3 py-1.5 text-sm capitalize ${
-              filter === f ? "bg-white/10 text-white" : "text-white/50 hover:text-white"
+              filter === f ? "bg-foreground/10 text-foreground" : "text-foreground/50 hover:text-foreground"
             }`}
           >
             {f}
@@ -92,8 +92,8 @@ export default function NotificationsPage() {
                     <p className="font-medium">{n.title}</p>
                     {!n.read ? <Badge status="medium">New</Badge> : null}
                   </div>
-                  <p className="mt-1 text-sm text-white/60">{n.body}</p>
-                  <p className="mt-1 text-xs text-white/40">{formatRelative(n.createdAt)}</p>
+                  <p className="mt-1 text-sm text-foreground/60">{n.body}</p>
+                  <p className="mt-1 text-xs text-foreground/40">{formatRelative(n.createdAt)}</p>
                 </div>
                 <div className="flex shrink-0 gap-2">
                   {n.href ? (

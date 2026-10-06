@@ -76,5 +76,3 @@ export const INVOICE_STATUSES = [
   "written_off",
 ] as const;
 
-export const USE_MOCK =
-  process.env.NEXT_PUBLIC_USE_MOCK !== "false";

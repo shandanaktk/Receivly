@@ -45,9 +45,9 @@ function ResetPasswordForm() {
   }
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 sm:p-8">
+    <div className="rounded-2xl border border-foreground/10 bg-foreground/[0.03] p-6 sm:p-8">
       <h1 className="text-2xl font-semibold tracking-tight">Reset password</h1>
-      <p className="mt-2 text-sm text-white/55">Choose a new password for your account.</p>
+      <p className="mt-2 text-sm text-foreground/55">Choose a new password for your account.</p>
 
       {success ? (
         <div className="mt-6 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-5" role="status">
@@ -88,7 +88,7 @@ function ResetPasswordForm() {
         </form>
       )}
 
-      <p className="mt-6 text-center text-sm text-white/50">
+      <p className="mt-6 text-center text-sm text-foreground/50">
         <Link href="/login" className="text-[#c084fc] hover:underline">
           Back to log in
         </Link>

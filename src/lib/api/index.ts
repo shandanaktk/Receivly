@@ -1,17 +1,9 @@
 /**
- * API facade — single import surface for the whole app.
- *
- * Backend integration checklist:
- * 1. Create `src/lib/api/liveApi.ts` with the same method signatures as `mockApi`.
- * 2. Set `NEXT_PUBLIC_USE_MOCK=false` in env.
- * 3. Delete or ignore `src/lib/mock/` once live data is stable.
+ * Single application data boundary. Screens import `api` only.
+ * Milestone 2 can supply a live adapter implementing ApiClient and replace
+ * this assignment without touching screen components or the sample data.
  */
-import { USE_MOCK } from "@/lib/constants";
 import { mockApi, type ApiClient } from "@/lib/api/mockApi";
 
-// import { liveApi } from "@/lib/api/liveApi";
-
-export const api: ApiClient = USE_MOCK ? mockApi : mockApi;
-// export const api: ApiClient = USE_MOCK ? mockApi : liveApi;
-
+export const api: ApiClient = mockApi;
 export type { ApiClient };

@@ -59,9 +59,9 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 sm:p-8">
+    <div className="rounded-2xl border border-foreground/10 bg-foreground/[0.03] p-6 sm:p-8">
       <h1 className="text-2xl font-semibold tracking-tight">Log in</h1>
-      <p className="mt-2 text-sm text-white/55">
+      <p className="mt-2 text-sm text-foreground/55">
         Access your workspace or platform admin console.
       </p>
 
@@ -109,35 +109,35 @@ export default function LoginPage() {
         className="mt-6 rounded-xl border border-[#902177]/30 bg-[#902177]/10 p-4"
         aria-label="Demo credentials"
       >
-        <p className="text-sm font-medium text-white/90">Demo credentials</p>
-        <p className="mt-1 text-xs text-white/50">
+        <p className="text-sm font-medium text-foreground/90">Demo credentials</p>
+        <p className="mt-1 text-xs text-foreground/50">
           Milestone 1 uses frontend-only auth. Click to fill the form.
         </p>
         <div className="mt-3 space-y-2">
           <button
             type="button"
             onClick={() => fillDemo("business")}
-            className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2.5 text-left text-sm transition hover:bg-white/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c084fc]"
+            className="w-full rounded-xl border border-foreground/10 bg-foreground/[0.04] px-3 py-2.5 text-left text-sm transition hover:bg-foreground/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c084fc]"
           >
-            <span className="font-medium text-white/85">{DEMO_CREDENTIALS.business.label}</span>
-            <span className="mt-0.5 block font-mono text-xs text-white/50">
+            <span className="font-medium text-foreground/85">{DEMO_CREDENTIALS.business.label}</span>
+            <span className="mt-0.5 block font-mono text-xs text-foreground/50">
               {DEMO_CREDENTIALS.business.email} / {DEMO_CREDENTIALS.business.password}
             </span>
           </button>
           <button
             type="button"
             onClick={() => fillDemo("admin")}
-            className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2.5 text-left text-sm transition hover:bg-white/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c084fc]"
+            className="w-full rounded-xl border border-foreground/10 bg-foreground/[0.04] px-3 py-2.5 text-left text-sm transition hover:bg-foreground/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c084fc]"
           >
-            <span className="font-medium text-white/85">{DEMO_CREDENTIALS.admin.label}</span>
-            <span className="mt-0.5 block font-mono text-xs text-white/50">
+            <span className="font-medium text-foreground/85">{DEMO_CREDENTIALS.admin.label}</span>
+            <span className="mt-0.5 block font-mono text-xs text-foreground/50">
               {DEMO_CREDENTIALS.admin.email} / {DEMO_CREDENTIALS.admin.password}
             </span>
           </button>
         </div>
       </aside>
 
-      <p className="mt-6 text-center text-sm text-white/50">
+      <p className="mt-6 text-center text-sm text-foreground/50">
         Don&apos;t have an account?{" "}
         <Link href="/signup" className="text-[#c084fc] hover:underline">
           Sign up

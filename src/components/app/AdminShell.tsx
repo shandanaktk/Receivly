@@ -1,19 +1,22 @@
 "use client";
 
 import { DemoBanner } from "@/components/shared/DemoBanner";
+import { BrandMark } from "@/components/shared/BrandMark";
+import { ThemeToggle } from "@/components/shared/ThemeToggle";
 import { Button } from "@/components/ui/Button";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
+import { Activity, Building2, ClipboardList, LayoutDashboard, SlidersHorizontal } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { ReactNode, useEffect, useState } from "react";
 
 const nav = [
-  { href: "/admin", label: "Overview" },
-  { href: "/admin/businesses", label: "Businesses" },
-  { href: "/admin/monitoring", label: "Monitoring" },
-  { href: "/admin/plans", label: "Plans & settings" },
-  { href: "/admin/audit", label: "Audit log" },
+  { href: "/admin", label: "Overview", icon: LayoutDashboard },
+  { href: "/admin/businesses", label: "Businesses", icon: Building2 },
+  { href: "/admin/monitoring", label: "Monitoring", icon: Activity },
+  { href: "/admin/plans", label: "Plans & settings", icon: SlidersHorizontal },
+  { href: "/admin/audit", label: "Audit log", icon: ClipboardList },
 ];
 
 export function AdminShell({ children }: { children: ReactNode }) {
@@ -30,47 +33,49 @@ export function AdminShell({ children }: { children: ReactNode }) {
 
   if (loading || !user) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#070712] text-white/70">
+      <div className="flex min-h-screen items-center justify-center bg-background text-foreground/70">
         Loading admin…
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#070712] text-white">
+    <div className="min-h-screen bg-background text-foreground">
       <DemoBanner />
-      <div className="flex min-h-[calc(100vh-36px)]">
+      <div className="flex min-h-screen">
         <aside
           className={cn(
-            "fixed inset-y-0 left-0 z-40 w-64 border-r border-white/10 bg-[#0a0a16] pt-[36px] transition md:static md:translate-x-0",
+            "fixed inset-y-0 left-0 z-40 w-64 border-r border-foreground/10 bg-elevated shadow-xl transition md:sticky md:top-0 md:h-screen md:translate-x-0 md:shadow-none",
             open ? "translate-x-0" : "-translate-x-full md:translate-x-0",
           )}
         >
-          <div className="flex h-14 items-center px-5 font-semibold">Platform Admin</div>
-          <nav className="space-y-1 px-3">
+          <div className="flex h-16 items-center border-b border-foreground/10 px-5"><BrandMark href="/admin" /></div>
+          <p className="px-5 pb-3 pt-5 text-xs font-semibold uppercase tracking-[.16em] text-foreground/45">Platform owner</p>
+          <nav className="space-y-1 px-3" aria-label="Platform navigation">
             {nav.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
                 onClick={() => setOpen(false)}
                 className={cn(
-                  "block rounded-xl px-3 py-2.5 text-sm",
+                  "flex min-h-10 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition",
                   pathname === item.href
-                    ? "bg-white/10 text-white"
-                    : "text-white/60 hover:bg-white/5",
+                    ? "bg-violet-500/15 text-violet-300"
+                    : "text-foreground/60 hover:bg-foreground/5 hover:text-foreground",
                 )}
               >
-                {item.label}
+                <item.icon size={18} strokeWidth={1.8} aria-hidden />{item.label}
               </Link>
             ))}
           </nav>
         </aside>
-        <div className="flex-1">
-          <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-white/10 bg-[#070712]/90 px-4 backdrop-blur">
-            <button className="md:hidden" onClick={() => setOpen(true)}>
+        <div className="min-w-0 flex-1">
+          <header className="sticky top-0 z-30 flex h-[76px] items-center justify-between border-b border-foreground/10 bg-background/90 px-4 backdrop-blur sm:px-6 lg:px-8">
+            <button className="rounded-lg border border-foreground/15 px-3 py-1.5 text-sm md:hidden" aria-label="Open admin menu" onClick={() => setOpen(true)}>
               Menu
             </button>
-            <span className="text-sm text-white/60">{user.email}</span>
+            <span className="hidden text-sm font-semibold text-foreground/60 sm:block">Platform operations</span>
+            <div className="flex items-center gap-2"><ThemeToggle />
             <Button
               variant="outline"
               size="sm"
@@ -81,10 +86,12 @@ export function AdminShell({ children }: { children: ReactNode }) {
             >
               Log out
             </Button>
+            </div>
           </header>
-          <main className="px-4 py-6 md:px-6">{children}</main>
+          <main className="mx-auto w-full max-w-[1560px] px-4 py-7 sm:px-6 lg:px-8 lg:py-9">{children}</main>
         </div>
       </div>
+      {open && <button className="fixed inset-0 z-30 bg-black/60 md:hidden" aria-label="Close admin navigation" onClick={() => setOpen(false)} />}
     </div>
   );
 }

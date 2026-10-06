@@ -100,14 +100,14 @@ const sections = [
 export default function FeaturesPage() {
   return (
     <>
-      <section className="border-b border-white/10 pt-28 pb-16 sm:pt-32 sm:pb-20">
+      <section className="border-b border-foreground/10 pt-28 pb-16 sm:pt-32 sm:pb-20">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <Reveal>
-            <p className="text-sm uppercase tracking-[0.18em] text-white/45">{APP_NAME}</p>
+            <p className="text-sm uppercase tracking-[0.18em] text-foreground/45">{APP_NAME}</p>
             <h1 className="mt-3 max-w-3xl text-4xl font-semibold tracking-tight sm:text-5xl">
               Everything you need to collect with clarity
             </h1>
-            <p className="mt-4 max-w-2xl text-base text-white/60 sm:text-lg">
+            <p className="mt-4 max-w-2xl text-base text-foreground/60 sm:text-lg">
               From invoice creation to settled payment — AI-powered follow-up with deterministic
               control at every step.
             </p>
@@ -119,7 +119,7 @@ export default function FeaturesPage() {
         <section
           key={section.id}
           id={section.id}
-          className="border-b border-white/10 py-16 sm:py-24 even:bg-white/[0.015]"
+          className="border-b border-foreground/10 py-16 sm:py-24 even:bg-foreground/[0.015]"
         >
           <div className="mx-auto grid max-w-6xl gap-10 px-4 sm:px-6 lg:grid-cols-[1fr_1.1fr] lg:items-start">
             <Reveal delay={i * 0.03}>
@@ -129,14 +129,14 @@ export default function FeaturesPage() {
               <h2 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
                 {section.title}
               </h2>
-              <p className="mt-2 text-lg text-white/70">{section.tagline}</p>
+              <p className="mt-2 text-lg text-foreground/70">{section.tagline}</p>
             </Reveal>
             <Reveal delay={i * 0.03 + 0.05}>
-              <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.05] to-transparent p-6 sm:p-8">
-                <p className="text-sm leading-relaxed text-white/65">{section.body}</p>
+              <div className="rounded-2xl border border-foreground/10 bg-gradient-to-br from-foreground/[0.05] to-transparent p-6 sm:p-8">
+                <p className="text-sm leading-relaxed text-foreground/65">{section.body}</p>
                 <ul className="mt-6 space-y-3">
                   {section.bullets.map((bullet) => (
-                    <li key={bullet} className="flex gap-3 text-sm text-white/75">
+                    <li key={bullet} className="flex gap-3 text-sm text-foreground/75">
                       <span
                         className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#902177]"
                         aria-hidden
@@ -157,7 +157,7 @@ export default function FeaturesPage() {
             <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
               Ready to see it in action?
             </h2>
-            <p className="mx-auto mt-4 max-w-xl text-white/60">
+            <p className="mx-auto mt-4 max-w-xl text-foreground/60">
               Start with a demo workspace or explore plans that match your invoice volume.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">

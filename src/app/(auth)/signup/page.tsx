@@ -28,6 +28,7 @@ function SignupForm() {
     setLoading(true);
     try {
       await signup(name.trim(), email.trim(), password);
+      if (selectedPlan) window.sessionStorage.setItem("receivly_pending_plan", selectedPlan.id);
       const verifyUrl = planParam ? `/verify-email?plan=${planParam}` : "/verify-email";
       router.push(verifyUrl);
     } catch (err) {
@@ -38,15 +39,15 @@ function SignupForm() {
   }
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 sm:p-8">
+    <div className="rounded-2xl border border-foreground/10 bg-foreground/[0.03] p-6 sm:p-8">
       <h1 className="text-2xl font-semibold tracking-tight">Create your account</h1>
-      <p className="mt-2 text-sm text-white/55">
+      <p className="mt-2 text-sm text-foreground/55">
         Start collecting invoices with AI-assisted follow-up.
       </p>
 
       {selectedPlan ? (
-        <p className="mt-4 rounded-xl border border-[#172B76]/40 bg-[#172B76]/15 px-4 py-3 text-sm text-white/75">
-          Selected plan: <strong className="text-white">{selectedPlan.name}</strong> — $
+        <p className="mt-4 rounded-xl border border-[#172B76]/40 bg-[#172B76]/15 px-4 py-3 text-sm text-foreground/75">
+          Selected plan: <strong className="text-foreground">{selectedPlan.name}</strong> — $
           {selectedPlan.priceMonthly}/mo, up to {selectedPlan.invoiceAllowance} invoices
         </p>
       ) : null}
@@ -88,7 +89,7 @@ function SignupForm() {
           </p>
         ) : null}
 
-        <p className="text-xs text-white/40">
+        <p className="text-xs text-foreground/40">
           By signing up you agree to our{" "}
           <Link href="/legal/terms" className="text-[#c084fc] hover:underline">
             Terms
@@ -105,7 +106,7 @@ function SignupForm() {
         </Button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-white/50">
+      <p className="mt-6 text-center text-sm text-foreground/50">
         Already have an account?{" "}
         <Link href="/login" className="text-[#c084fc] hover:underline">
           Log in

@@ -74,7 +74,7 @@ export default function ProfilePage() {
     <div className="mx-auto max-w-2xl space-y-6">
       <div>
         <h1 className="text-2xl font-semibold">Profile</h1>
-        <p className="text-sm text-white/55">{user.email}</p>
+        <p className="text-sm text-foreground/55">{user.email}</p>
       </div>
 
       <Card>
@@ -92,6 +92,7 @@ export default function ProfilePage() {
             value={user.jobRole || ""}
             onChange={(e) => updateUser({ jobRole: e.target.value })}
           />
+          <Input label="Avatar URL (optional)" type="url" value={user.avatarUrl || ""} onChange={(e) => updateUser({ avatarUrl: e.target.value })} hint="A profile photo appears beside your account when connected to storage." />
           <Select
             label="Timezone"
             value={user.timezone}
@@ -131,7 +132,7 @@ export default function ProfilePage() {
             value={passwords.confirm}
             onChange={(e) => setPasswords({ ...passwords, confirm: e.target.value })}
           />
-          {passwordMsg ? <p className="text-sm text-white/60">{passwordMsg}</p> : null}
+          {passwordMsg ? <p className="text-sm text-foreground/60">{passwordMsg}</p> : null}
           <Button variant="secondary" onClick={updatePassword}>
             Update password
           </Button>
@@ -145,12 +146,12 @@ export default function ProfilePage() {
         <CardBody className="space-y-3">
           {NOTIF_KEYS.map(({ key, label }) => (
             <label key={key} className="flex items-center justify-between gap-3 text-sm">
-              <span className="text-white/80">{label}</span>
+              <span className="text-foreground/80">{label}</span>
               <input
                 type="checkbox"
                 checked={Boolean(user.notificationPreferences[key])}
                 onChange={() => togglePref(key)}
-                className="rounded border-white/20"
+                className="rounded border-foreground/20"
               />
             </label>
           ))}
@@ -173,6 +174,7 @@ export default function ProfilePage() {
           />
         </CardBody>
       </Card>
+      <Card><CardHeader><h2 className="font-medium">Account deletion</h2></CardHeader><CardBody className="space-y-3 text-sm text-foreground/65"><p>Deletion requires identity verification and a retention review. Workspace owners must close or transfer their workspace first.</p><a href={`mailto:support@receivly.ai?subject=${encodeURIComponent("Account deletion request")}&body=${encodeURIComponent(`Account: ${user.email}`)}`} className="inline-block rounded-full border border-rose-500/30 px-4 py-2 font-medium text-rose-300 hover:bg-rose-500/10">Request account deletion</a><p className="text-xs text-foreground/45">The verified request workflow will be connected with the backend.</p></CardBody></Card>
     </div>
   );
 }

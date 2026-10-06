@@ -7,11 +7,11 @@ import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { PageLoader } from "@/components/ui/Spinner";
 import { api } from "@/lib/api";
-import { formatRelative, statusLabel } from "@/lib/format";
+import { formatRelative } from "@/lib/format";
 import type { TeamMember, UserRole, Workspace } from "@/types";
 import { useCallback, useEffect, useState } from "react";
 
-const TABS = ["workspace", "team", "roles"] as const;
+const TABS = ["workspace", "team", "roles", "data & closure"] as const;
 type Tab = (typeof TABS)[number];
 
 const ROLE_OPTIONS: { value: UserRole; label: string }[] = [
@@ -46,7 +46,7 @@ export default function SettingsPage() {
   }, []);
 
   useEffect(() => {
-    void load();
+    void Promise.resolve().then(load);
   }, [load]);
 
   const saveWorkspace = async () => {
@@ -65,16 +65,27 @@ export default function SettingsPage() {
     setSaving(false);
   };
 
+  const changeRole = async (id: string, role: UserRole) => {
+    await api.updateTeamMember(id, { role });
+    setTeam(await api.getTeam());
+  };
+
+  const removeMember = async (member: TeamMember) => {
+    if (!window.confirm(`Remove ${member.email} from this workspace? Their historical actions remain in the audit trail.`)) return;
+    await api.updateTeamMember(member.id, { status: "removed" });
+    setTeam(await api.getTeam());
+  };
+
   if (loading || !workspace) return <PageLoader label="Loading settings…" />;
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <div>
         <h1 className="text-2xl font-semibold">Settings</h1>
-        <p className="text-sm text-white/55">Workspace, team, and roles</p>
+        <p className="text-sm text-foreground/55">Workspace, team, and roles</p>
       </div>
 
-      <div className="flex gap-2 overflow-x-auto border-b border-white/10 pb-px">
+      <div className="flex gap-2 overflow-x-auto border-b border-foreground/10 pb-px">
         {TABS.map((t) => (
           <button
             key={t}
@@ -82,8 +93,8 @@ export default function SettingsPage() {
             onClick={() => setTab(t)}
             className={`shrink-0 border-b-2 px-4 py-2 text-sm capitalize transition ${
               tab === t
-                ? "border-fuchsia-500 text-white"
-                : "border-transparent text-white/50 hover:text-white"
+                ? "border-fuchsia-500 text-foreground"
+                : "border-transparent text-foreground/50 hover:text-foreground"
             }`}
           >
             {t}
@@ -118,12 +129,14 @@ export default function SettingsPage() {
               value={workspace.address || ""}
               onChange={(e) => setWorkspace({ ...workspace, address: e.target.value })}
             />
+            <div className="grid gap-4 sm:grid-cols-2"><Input label="Country" value={workspace.country} onChange={(e) => setWorkspace({ ...workspace, country: e.target.value })} /><Select label="Default currency" value={workspace.currency} onChange={(e) => setWorkspace({ ...workspace, currency: e.target.value })} options={["USD", "CAD", "GBP", "EUR"].map((value) => ({ value, label: value }))} /><Input label="Tax ID" value={workspace.taxId || ""} onChange={(e) => setWorkspace({ ...workspace, taxId: e.target.value })} /><Input label="Logo URL (optional)" type="url" value={workspace.logoUrl || ""} onChange={(e) => setWorkspace({ ...workspace, logoUrl: e.target.value })} /></div>
             <div className="grid gap-4 sm:grid-cols-2">
               <Input
                 label="Invoice prefix"
                 value={workspace.invoicePrefix}
                 onChange={(e) => setWorkspace({ ...workspace, invoicePrefix: e.target.value })}
               />
+              <Input label="Next invoice number" type="number" min={1} value={workspace.nextInvoiceNumber} onChange={(e) => setWorkspace({ ...workspace, nextInvoiceNumber: Number(e.target.value) })} />
               <Select
                 label="Timezone"
                 value={workspace.timezone}
@@ -137,6 +150,7 @@ export default function SettingsPage() {
                 ]}
               />
             </div>
+            <p className="text-sm text-foreground/50">Invoice numbering is unique within this workspace. Existing numbers remain unchanged.</p>
             <Button onClick={() => void saveWorkspace()} disabled={saving}>
               {saving ? "Saving…" : "Save workspace"}
             </Button>
@@ -178,7 +192,7 @@ export default function SettingsPage() {
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[560px] text-left text-sm">
                   <thead>
-                    <tr className="border-b border-white/10 text-white/50">
+                    <tr className="border-b border-foreground/10 text-foreground/50">
                       <th className="px-5 py-3 font-medium">Member</th>
                       <th className="px-5 py-3 font-medium">Role</th>
                       <th className="px-5 py-3 font-medium">Status</th>
@@ -186,19 +200,19 @@ export default function SettingsPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {team.map((m) => (
-                      <tr key={m.id} className="border-b border-white/5">
+                    {team.filter((m) => m.status !== "removed").map((m) => (
+                      <tr key={m.id} className="border-b border-foreground/5">
                         <td className="px-5 py-3">
                           <p className="font-medium">{m.name}</p>
-                          <p className="text-xs text-white/45">{m.email}</p>
+                          <p className="text-xs text-foreground/45">{m.email}</p>
                         </td>
-                        <td className="px-5 py-3">{statusLabel(m.role)}</td>
+                        <td className="px-5 py-3"><select aria-label={`Role for ${m.email}`} value={m.role} onChange={(e) => void changeRole(m.id, e.target.value as UserRole)} className="rounded-lg border border-foreground/15 bg-elevated px-2 py-1.5 text-sm">{ROLE_OPTIONS.map((role) => <option key={role.value} value={role.value}>{role.label}</option>)}</select></td>
                         <td className="px-5 py-3">
                           <Badge status={m.status === "active" ? "active" : "draft"}>
                             {m.status}
                           </Badge>
                         </td>
-                        <td className="px-5 py-3 text-white/50">{formatRelative(m.invitedAt)}</td>
+                        <td className="px-5 py-3 text-foreground/50">{formatRelative(m.invitedAt)} <button type="button" className="ml-2 text-rose-300 hover:underline" onClick={() => void removeMember(m)}>Remove</button></td>
                       </tr>
                     ))}
                   </tbody>
@@ -216,9 +230,9 @@ export default function SettingsPage() {
           </CardHeader>
           <CardBody className="space-y-4">
             {ROLE_OPTIONS.map((role) => (
-              <div key={role.value} className="rounded-xl border border-white/10 p-4">
+              <div key={role.value} className="rounded-xl border border-foreground/10 p-4">
                 <p className="font-medium">{role.label}</p>
-                <p className="mt-1 text-sm text-white/55">
+                <p className="mt-1 text-sm text-foreground/55">
                   {ROLE_DESCRIPTIONS[role.value] || "Standard workspace permissions."}
                 </p>
               </div>
@@ -226,6 +240,8 @@ export default function SettingsPage() {
           </CardBody>
         </Card>
       )}
+
+      {tab === "data & closure" && <Card><CardHeader><h2 className="font-medium">Data rights & workspace closure</h2></CardHeader><CardBody className="space-y-4 text-sm text-foreground/65"><p>Workspace exports include only records your team can access. Account deletion and workspace closure require identity checks and a retention review before data is removed.</p><div className="rounded-xl border border-foreground/10 bg-foreground/[0.025] p-4"><p className="font-semibold text-foreground">Before closing a workspace</p><ul className="mt-2 list-inside list-disc space-y-1"><li>Export customer and invoice records.</li><li>Review open invoices and pending collection actions.</li><li>Confirm the owner, retention window, and billing status.</li></ul></div><a href="mailto:support@receivly.ai?subject=Workspace%20closure%20request" className="inline-block rounded-full border border-foreground/20 px-4 py-2 font-medium text-foreground hover:bg-foreground/[0.05]">Request controlled closure</a><p className="text-xs text-foreground/45">The request flow will connect to backend verification in Milestone 2.</p></CardBody></Card>}
     </div>
   );
 }

@@ -105,6 +105,9 @@ export interface Workspace {
   quietHoursEnd: string;
   maxReminders: number;
   permittedDays: number[];
+  reminderDays?: number[];
+  exclusionTags?: string[];
+  ccPolicy?: "none" | "billing_contacts";
 }
 
 export interface TeamMember {
@@ -145,6 +148,7 @@ export interface Customer {
   lastContactDate?: string;
   contacts: CustomerContact[];
   collectorPaused?: boolean;
+  doNotContact?: boolean;
   createdAt: string;
 }
 
@@ -191,6 +195,7 @@ export interface Invoice {
   balance: number;
   createdAt: string;
   updatedAt: string;
+  attachments?: { id: string; name: string; size: number; type: string }[];
 }
 
 export interface TimelineEvent {
@@ -247,6 +252,8 @@ export interface Conversation {
   nextAction?: string;
   aiCategory?: ReplyCategory;
   aiConfidence?: number;
+  classificationOverride?: ReplyCategory;
+  promisedDateOverride?: string;
   messages: Message[];
   internalNotes: { id: string; body: string; author: string; createdAt: string }[];
 }
@@ -272,6 +279,7 @@ export interface NotificationItem {
 }
 
 export interface DashboardSummary {
+  currency: string;
   totalOutstanding: number;
   overdueAmount: number;
   overdueCount: number;
@@ -295,6 +303,7 @@ export interface Plan {
 }
 
 export interface ReportSummary {
+  currency: string;
   outstandingByCustomer: { name: string; amount: number; overdue: number }[];
   agingBands: { label: string; amount: number }[];
   collectionActivity: {
@@ -335,6 +344,10 @@ export interface PlatformBusiness {
   usage: number;
   createdAt: string;
   lastActiveAt: string;
+  suspended?: boolean;
+  invoiceLimitOverride?: number;
+  featureFlags?: { aiCollector: boolean; csvImport: boolean; approvals: boolean };
+  providerReference?: string;
 }
 
 export interface AuditLogEntry {

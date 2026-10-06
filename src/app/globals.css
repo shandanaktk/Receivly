@@ -1,22 +1,39 @@
 @import "tailwindcss";
 
+@font-face { font-family: "DM Sans"; src: url("/fonts/dm-sans-latin.woff2") format("woff2"); font-style: normal; font-weight: 100 1000; font-display: swap; }
+@font-face { font-family: "JetBrains Mono"; src: url("/fonts/jetbrains-mono-latin.woff2") format("woff2"); font-style: normal; font-weight: 100 800; font-display: swap; }
+
 :root {
-  --bg: #05050f;
-  --bg-elevated: #0c0c18;
-  --text: #f5f5f7;
-  --muted: rgba(245, 245, 247, 0.55);
+  --app-font-sans: "DM Sans", "Segoe UI", Arial, sans-serif;
+  --app-font-mono: "JetBrains Mono", Consolas, monospace;
+  --bg: #070914;
+  --bg-elevated: #101426;
+  --text: #f5f6fc;
+  --muted: #a9afc3;
   --accent-fuchsia: #902177;
   --accent-blue: #172b76;
   --accent-violet: #5b2d8e;
   --ring: #c084fc;
-  --border: rgba(255, 255, 255, 0.1);
+  --border: rgba(255, 255, 255, 0.12);
 }
+
+html[data-theme="light"] {
+  --bg: #f4f5fb;
+  --bg-elevated: #fff;
+  --text: #192039;
+  --muted: #5a637c;
+  --border: rgba(29, 33, 62, 0.14);
+  color-scheme: light;
+}
+
+html[data-theme="dark"] { color-scheme: dark; }
 
 @theme inline {
   --color-background: var(--bg);
+  --color-elevated: var(--bg-elevated);
   --color-foreground: var(--text);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-mono);
+  --font-sans: var(--app-font-sans);
+  --font-mono: var(--app-font-mono);
 }
 
 * {
@@ -46,9 +63,72 @@ body {
   min-height: 100%;
   background: var(--bg);
   color: var(--text);
-  font-family: var(--font-sans), "Segoe UI", sans-serif;
+  font-family: var(--app-font-sans);
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+}
+
+button, input, select, textarea { font: inherit; }
+button { cursor: pointer; }
+button:disabled { cursor: not-allowed; }
+
+/* Keep supporting copy readable on small screens, including table metadata. */
+.text-xs { font-size: 0.8125rem; line-height: 1.35rem; }
+
+:focus-visible { outline: 2px solid #a26df2; outline-offset: 3px; }
+
+html[data-theme="light"] .text-rose-300,
+html[data-theme="light"] .text-rose-300\/90 { color: #be345a; }
+html[data-theme="light"] .text-emerald-300,
+html[data-theme="light"] .text-emerald-400 { color: #087a59; }
+html[data-theme="light"] .text-amber-300 { color: #a75a00; }
+html[data-theme="light"] .text-sky-300 { color: #176ba2; }
+html[data-theme="light"] .text-fuchsia-300 { color: #8a2c80; }
+html[data-theme="light"] .text-violet-300,
+html[data-theme="light"] .text-violet-200 { color: #6e39b3; }
+html[data-theme="light"] .text-sky-200 { color: #136890; }
+html[data-theme="light"] .text-amber-200 { color: #8a5400; }
+html[data-theme="light"] .text-rose-200 { color: #b52955; }
+html[data-theme="light"] .text-emerald-200 { color: #087a59; }
+html[data-theme="light"] .text-fuchsia-200 { color: #8a2c80; }
+html[data-theme="light"] .text-orange-200 { color: #a85d0a; }
+html[data-theme="light"] .text-cyan-200 { color: #0b718a; }
+html[data-theme="light"] .text-\[\#c084fc\],
+html[data-theme="light"] .text-\[\#d8b4fe\] { color: #7b38a5; }
+
+.hero-dark { --text: #f8f7ff; --bg: #070914; }
+html[data-theme="light"] .hero-dark [class*="text-foreground"] { color: rgba(248, 247, 255, .82) !important; }
+html[data-theme="light"] .hero-dark .text-fuchsia-200,
+html[data-theme="light"] .hero-dark .text-fuchsia-300 { color: #efb9ee !important; }
+html[data-theme="light"] .hero-dark .text-emerald-300 { color: #7ae5b9 !important; }
+
+.glass-panel {
+  background: color-mix(in srgb, var(--bg-elevated) 88%, transparent);
+  border: 1px solid var(--border);
+  box-shadow: 0 18px 70px rgba(4, 8, 31, 0.08);
+  backdrop-filter: blur(22px);
+}
+
+.marketing-grid {
+  background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 62px 62px;
+  mask-image: linear-gradient(to bottom, transparent, black 30%, black 65%, transparent);
+}
+
+.section-kicker { color: #b599f8; letter-spacing: .18em; text-transform: uppercase; font-size: .82rem; font-weight: 700; }
+html[data-theme="light"] .section-kicker { color: #6c45b0; }
+
+@keyframes float-card { 50% { transform: translateY(-12px); } }
+.float-card { animation: float-card 8s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .float-card { animation: none; } }
+
+@media print {
+  html, body, .public-invoice { background: #fff !important; color: #111827 !important; }
+  .public-invoice header, .public-invoice .invoice-actions, .public-invoice footer { display: none !important; }
+  .public-invoice main { max-width: none; padding: 0; }
+  .public-invoice [class*="rounded"] { break-inside: avoid; }
+  .public-invoice [class*="text-foreground"] { color: #374151 !important; }
+  .public-invoice [class*="border-foreground"] { border-color: #d1d5db !important; }
 }
 
 a {
@@ -85,7 +165,7 @@ a {
 }
 
 .table-wrap th {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--muted);
   font-size: 0.75rem;
   font-weight: 500;
   text-transform: uppercase;

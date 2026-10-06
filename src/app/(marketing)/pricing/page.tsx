@@ -93,25 +93,25 @@ function CellValue({ value }: { value: string | boolean }) {
         ✓
       </span>
     ) : (
-      <span className="text-white/25" aria-label="Not included">
+      <span className="text-foreground/25" aria-label="Not included">
         —
       </span>
     );
   }
-  return <span className="text-white/80">{value}</span>;
+  return <span className="text-foreground/80">{value}</span>;
 }
 
 export default function PricingPage() {
   return (
     <>
-      <section className="border-b border-white/10 pt-28 pb-16 sm:pt-32 sm:pb-20">
+      <section className="border-b border-foreground/10 pt-28 pb-16 sm:pt-32 sm:pb-20">
         <div className="mx-auto max-w-6xl px-4 text-center sm:px-6">
           <Reveal>
-            <p className="text-sm uppercase tracking-[0.18em] text-white/45">{APP_NAME}</p>
+            <p className="text-sm uppercase tracking-[0.18em] text-foreground/45">{APP_NAME}</p>
             <h1 className="mt-3 text-4xl font-semibold tracking-tight sm:text-5xl">
               Pricing that scales with your receivables
             </h1>
-            <p className="mx-auto mt-4 max-w-2xl text-white/60">
+            <p className="mx-auto mt-4 max-w-2xl text-foreground/60">
               Pay for active invoice capacity — not seats. Upgrade when your volume grows.
             </p>
           </Reveal>
@@ -128,7 +128,7 @@ export default function PricingPage() {
                     "flex h-full flex-col rounded-2xl border p-6 sm:p-8",
                     plan.highlighted
                       ? "border-[#902177]/50 bg-gradient-to-b from-[#902177]/10 to-transparent shadow-[0_0_40px_rgba(144,33,119,0.12)]"
-                      : "border-white/10 bg-white/[0.03]",
+                      : "border-foreground/10 bg-foreground/[0.03]",
                   )}
                 >
                   {plan.highlighted ? (
@@ -139,14 +139,14 @@ export default function PricingPage() {
                   <h2 className="text-xl font-semibold">{plan.name}</h2>
                   <p className="mt-3 flex items-baseline gap-1">
                     <span className="text-4xl font-semibold">${plan.priceMonthly}</span>
-                    <span className="text-sm text-white/50">/ month</span>
+                    <span className="text-sm text-foreground/50">/ month</span>
                   </p>
-                  <p className="mt-2 text-sm text-white/55">
+                  <p className="mt-2 text-sm text-foreground/55">
                     Up to {plan.invoiceAllowance.toLocaleString()} active invoices
                   </p>
                   <ul className="mt-6 flex-1 space-y-2.5">
                     {plan.features.map((feature) => (
-                      <li key={feature} className="flex gap-2 text-sm text-white/70">
+                      <li key={feature} className="flex gap-2 text-sm text-foreground/70">
                         <span className="text-emerald-400" aria-hidden>
                           ✓
                         </span>
@@ -169,43 +169,43 @@ export default function PricingPage() {
         </div>
       </section>
 
-      <section className="border-t border-white/10 py-16 sm:py-24">
+      <section className="border-t border-foreground/10 py-16 sm:py-24">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <Reveal>
             <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
               Compare plans
             </h2>
-            <p className="mt-2 text-sm text-white/55">
+            <p className="mt-2 text-sm text-foreground/55">
               Scroll horizontally on smaller screens to see all columns.
             </p>
           </Reveal>
 
           <Reveal delay={0.05}>
-            <div className="mt-8 overflow-x-auto rounded-2xl border border-white/10">
+            <div className="mt-8 overflow-x-auto rounded-2xl border border-foreground/10">
               <table className="w-full min-w-[640px] border-collapse text-left text-sm">
                 <caption className="sr-only">
                   Feature comparison across Starter, Professional, and Business plans
                 </caption>
                 <thead>
-                  <tr className="border-b border-white/10 bg-white/[0.04]">
-                    <th scope="col" className="px-4 py-4 font-medium text-white/70 sm:px-6">
+                  <tr className="border-b border-foreground/10 bg-foreground/[0.04]">
+                    <th scope="col" className="px-4 py-4 font-medium text-foreground/70 sm:px-6">
                       Feature
                     </th>
-                    <th scope="col" className="px-4 py-4 font-medium text-white sm:px-6">
+                    <th scope="col" className="px-4 py-4 font-medium text-foreground sm:px-6">
                       Starter
                     </th>
-                    <th scope="col" className="px-4 py-4 font-medium text-white sm:px-6">
+                    <th scope="col" className="px-4 py-4 font-medium text-foreground sm:px-6">
                       Professional
                     </th>
-                    <th scope="col" className="px-4 py-4 font-medium text-white sm:px-6">
+                    <th scope="col" className="px-4 py-4 font-medium text-foreground sm:px-6">
                       Business
                     </th>
                   </tr>
                 </thead>
                 <tbody>
                   {comparisonRows.map((row) => (
-                    <tr key={row.feature} className="border-b border-white/10 last:border-0">
-                      <th scope="row" className="px-4 py-3.5 font-normal text-white/75 sm:px-6">
+                    <tr key={row.feature} className="border-b border-foreground/10 last:border-0">
+                      <th scope="row" className="px-4 py-3.5 font-normal text-foreground/75 sm:px-6">
                         {row.feature}
                       </th>
                       <td className="px-4 py-3.5 text-center sm:px-6">
@@ -226,11 +226,11 @@ export default function PricingPage() {
         </div>
       </section>
 
-      <section className="border-t border-white/10 py-16 sm:py-20">
+      <section className="border-t border-foreground/10 py-16 sm:py-20">
         <div className="mx-auto max-w-6xl px-4 text-center sm:px-6">
           <Reveal>
             <h2 className="text-2xl font-semibold sm:text-3xl">Questions about volume or enterprise?</h2>
-            <p className="mx-auto mt-3 max-w-lg text-white/60">
+            <p className="mx-auto mt-3 max-w-lg text-foreground/60">
               Need more than 1,000 active invoices or custom compliance? Talk to us.
             </p>
             <div className="mt-6 flex flex-wrap justify-center gap-3">
@@ -238,7 +238,7 @@ export default function PricingPage() {
                 <Button variant="outline">Contact sales</Button>
               </Link>
               <Link href="/signup">
-                <Button>Start free trial</Button>
+                <Button>Choose a plan</Button>
               </Link>
             </div>
           </Reveal>

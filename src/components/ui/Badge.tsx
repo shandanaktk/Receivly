@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 import { statusLabel } from "@/lib/format";
 
 const toneMap: Record<string, string> = {
-  draft: "bg-white/10 text-white/70",
+  draft: "bg-foreground/10 text-foreground/70",
   sent: "bg-sky-500/15 text-sky-200",
   due: "bg-amber-500/15 text-amber-200",
   overdue: "bg-rose-500/15 text-rose-200",
@@ -11,14 +11,19 @@ const toneMap: Record<string, string> = {
   payment_promised: "bg-violet-500/15 text-violet-200",
   payment_claimed: "bg-orange-500/15 text-orange-200",
   partially_paid: "bg-cyan-500/15 text-cyan-200",
-  paused: "bg-white/10 text-white/60",
+  paused: "bg-foreground/10 text-foreground/60",
   active: "bg-emerald-500/15 text-emerald-200",
   past_due: "bg-rose-500/15 text-rose-200",
   trialing: "bg-sky-500/15 text-sky-200",
-  cancelled: "bg-white/10 text-white/50",
+  cancelled: "bg-foreground/10 text-foreground/50",
   high: "bg-rose-500/15 text-rose-200",
   medium: "bg-amber-500/15 text-amber-200",
-  low: "bg-white/10 text-white/60",
+  low: "bg-foreground/10 text-foreground/60",
+  healthy: "bg-emerald-500/15 text-emerald-200",
+  degraded: "bg-amber-500/15 text-amber-200",
+  critical: "bg-rose-500/15 text-rose-200",
+  failed: "bg-rose-500/15 text-rose-200",
+  pending: "bg-amber-500/15 text-amber-200",
 };
 
 export function Badge({
@@ -35,7 +40,7 @@ export function Badge({
     <span
       className={cn(
         "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize",
-        toneMap[key] || "bg-white/10 text-white/70",
+        toneMap[key] || "bg-foreground/10 text-foreground/70",
         className,
       )}
     >

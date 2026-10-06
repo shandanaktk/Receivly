@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -9,104 +9,7 @@ import { PLANS } from "@/lib/constants";
 import { formatMoney } from "@/lib/format";
 import type { PlanId } from "@/types";
 import { useState } from "react";
-
-interface PlanLimits {
-  planId: PlanId;
-  invoiceAllowance: number;
-  teamSeats: number;
-  aiTokensMonthly: number;
-  visible: boolean;
-}
-
-interface EmailTemplate {
-  id: string;
-  name: string;
-  subject: string;
-  body: string;
-}
-
-interface PromptVersion {
-  id: string;
-  name: string;
-  version: string;
-  active: boolean;
-  preview: string;
-}
-
-interface Announcement {
-  id: string;
-  message: string;
-  enabled: boolean;
-  link?: string;
-}
-
-interface SupportContact {
-  label: string;
-  email: string;
-  hours: string;
-}
-
-const INITIAL_LIMITS: PlanLimits[] = PLANS.map((p) => ({
-  planId: p.id,
-  invoiceAllowance: p.invoiceAllowance,
-  teamSeats: p.id === "starter" ? 2 : p.id === "professional" ? 10 : 50,
-  aiTokensMonthly: p.id === "starter" ? 50000 : p.id === "professional" ? 250000 : 1000000,
-  visible: true,
-}));
-
-const INITIAL_TEMPLATES: EmailTemplate[] = [
-  {
-    id: "tpl_reminder",
-    name: "Friendly reminder",
-    subject: "Reminder: Invoice {{invoice_number}} from {{company}}",
-    body: "Hi {{contact_name}},\n\nThis is a friendly reminder that invoice {{invoice_number}} for {{amount}} was due on {{due_date}}.\n\n{{payment_link}}\n\nThank you,\n{{sender_name}}",
-  },
-  {
-    id: "tpl_overdue",
-    name: "Overdue notice",
-    subject: "Overdue: {{invoice_number}} — action requested",
-    body: "Hi {{contact_name}},\n\nOur records show invoice {{invoice_number}} remains outstanding. Please advise on payment timing or reply if there is a dispute.\n\n{{sender_name}}",
-  },
-];
-
-const INITIAL_PROMPTS: PromptVersion[] = [
-  {
-    id: "prompt_collector_v3",
-    name: "Collector reply drafter",
-    version: "3.2.1",
-    active: true,
-    preview: "You are Receivly's AR assistant. Draft professional reminders without inventing amounts or dates…",
-  },
-  {
-    id: "prompt_classifier_v2",
-    name: "Inbound classifier",
-    version: "2.0.4",
-    active: true,
-    preview: "Classify the customer reply into one of: payment_promise, claims_already_paid, invoice_dispute…",
-  },
-  {
-    id: "prompt_collector_v2",
-    name: "Collector reply drafter",
-    version: "2.8.0",
-    active: false,
-    preview: "Legacy prompt — retained for rollback.",
-  },
-];
-
-const INITIAL_ANNOUNCEMENTS: Announcement[] = [
-  {
-    id: "ann_1",
-    message: "Scheduled maintenance Oct 12, 02:00–04:00 UTC — email delivery may be delayed.",
-    enabled: true,
-    link: "https://status.receivly.ai",
-  },
-];
-
-const INITIAL_SUPPORT: SupportContact = {
-  label: "Platform support",
-  email: "support@receivly.ai",
-  hours: "Mon–Fri, 9am–6pm ET",
-};
+import { INITIAL_ANNOUNCEMENTS, INITIAL_LIMITS, INITIAL_PROMPTS, INITIAL_SUPPORT, INITIAL_TEMPLATES, type EmailTemplate, type PlanLimits } from "@/lib/mock/adminPlans";
 
 export default function AdminPlansPage() {
   const [limits, setLimits] = useState(INITIAL_LIMITS);
@@ -146,11 +49,11 @@ export default function AdminPlansPage() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Plans & settings</h1>
-          <p className="mt-1 text-sm text-white/55">
-            Configure plan visibility, limits, templates, and platform messaging — local demo state only.
+          <p className="mt-1 text-sm text-foreground/55">
+            Configure plan visibility, limits, templates, and platform messaging â€” local demo state only.
           </p>
         </div>
-        <Button onClick={handleSave}>{saved ? "Saved ✓" : "Save changes"}</Button>
+        <Button onClick={handleSave}>{saved ? "Saved âœ“" : "Save changes"}</Button>
       </div>
 
       <Card>
@@ -163,21 +66,21 @@ export default function AdminPlansPage() {
             return (
               <div
                 key={plan.id}
-                className="rounded-xl border border-white/10 bg-white/[0.02] p-4"
+                className="rounded-xl border border-foreground/10 bg-foreground/[0.02] p-4"
               >
                 <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
                   <div>
                     <h3 className="font-medium">{plan.name}</h3>
-                    <p className="text-sm text-white/50">
-                      {formatMoney(plan.priceMonthly)}/mo · {plan.features.length} features
+                    <p className="text-sm text-foreground/50">
+                      {formatMoney(plan.priceMonthly)}/mo Â· {plan.features.length} features
                     </p>
                   </div>
-                  <label className="flex items-center gap-2 text-sm text-white/70">
+                  <label className="flex items-center gap-2 text-sm text-foreground/70">
                     <input
                       type="checkbox"
                       checked={cfg.visible}
                       onChange={(e) => updateLimit(plan.id, { visible: e.target.checked })}
-                      className="rounded border-white/20 bg-white/5"
+                      className="rounded border-foreground/20 bg-foreground/5"
                     />
                     Visible on pricing
                   </label>
@@ -225,7 +128,7 @@ export default function AdminPlansPage() {
         </CardHeader>
         <CardBody className="space-y-6">
           {templates.map((tpl) => (
-            <div key={tpl.id} className="space-y-3 rounded-xl border border-white/10 p-4">
+            <div key={tpl.id} className="space-y-3 rounded-xl border border-foreground/10 p-4">
               <Input
                 label="Template name"
                 value={tpl.name}
@@ -255,15 +158,15 @@ export default function AdminPlansPage() {
           {prompts.map((prompt) => (
             <div
               key={prompt.id}
-              className="flex flex-col gap-3 rounded-xl border border-white/10 p-4 sm:flex-row sm:items-start sm:justify-between"
+              className="flex flex-col gap-3 rounded-xl border border-foreground/10 p-4 sm:flex-row sm:items-start sm:justify-between"
             >
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
                   <p className="font-medium">{prompt.name}</p>
-                  <span className="font-mono text-xs text-white/45">v{prompt.version}</span>
+                  <span className="font-mono text-xs text-foreground/45">v{prompt.version}</span>
                   {prompt.active ? <Badge status="active">Active</Badge> : null}
                 </div>
-                <p className="mt-2 text-sm text-white/55 line-clamp-2">{prompt.preview}</p>
+                <p className="mt-2 text-sm text-foreground/55 line-clamp-2">{prompt.preview}</p>
               </div>
               {!prompt.active ? (
                 <Button size="sm" variant="outline" onClick={() => activatePrompt(prompt.id)}>
@@ -294,7 +197,7 @@ export default function AdminPlansPage() {
           </CardHeader>
           <CardBody className="space-y-4">
             {announcements.map((ann) => (
-              <div key={ann.id} className="space-y-2 rounded-xl border border-white/10 p-3">
+              <div key={ann.id} className="space-y-2 rounded-xl border border-foreground/10 p-3">
                 <label className="flex items-center gap-2 text-sm">
                   <input
                     type="checkbox"
@@ -314,7 +217,7 @@ export default function AdminPlansPage() {
                       prev.map((a) => (a.id === ann.id ? { ...a, message: e.target.value } : a)),
                     )
                   }
-                  placeholder="Banner message…"
+                  placeholder="Banner messageâ€¦"
                   rows={2}
                 />
                 <Input
@@ -367,3 +270,4 @@ export default function AdminPlansPage() {
     </div>
   );
 }
+

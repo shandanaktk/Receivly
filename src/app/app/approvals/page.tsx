@@ -25,10 +25,11 @@ export default function ApprovalsPage() {
   }, []);
 
   useEffect(() => {
-    void load();
+    void Promise.resolve().then(load);
   }, [load]);
 
   const resolve = async (id: string, action: "approve" | "reject" | "edit", body?: string) => {
+    if (!window.confirm(`${action === "reject" ? "Reject" : "Approve"} this draft? The demo updates history but does not deliver an email.`)) return;
     setBusy(id);
     await api.resolveApproval(id, action, body);
     setEditingId(null);
@@ -42,8 +43,8 @@ export default function ApprovalsPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-semibold">Approval queue</h1>
-        <p className="text-sm text-white/55">
-          Review AI-drafted reminders before they send
+        <p className="text-sm text-foreground/55">
+          Review AI-drafted reminders. Approval updates demo history; no email is sent.
         </p>
       </div>
 
@@ -59,7 +60,7 @@ export default function ApprovalsPage() {
               <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <p className="font-medium">{item.customerName}</p>
-                  <p className="text-xs text-white/45">
+                  <p className="text-xs text-foreground/45">
                     {item.stage} · {formatRelative(item.createdAt)}
                   </p>
                 </div>
@@ -77,7 +78,7 @@ export default function ApprovalsPage() {
                     rows={6}
                   />
                 ) : (
-                  <p className="whitespace-pre-wrap rounded-xl border border-white/10 bg-white/[0.02] p-4 text-sm text-white/80">
+                  <p className="whitespace-pre-wrap rounded-xl border border-foreground/10 bg-foreground/[0.02] p-4 text-sm text-foreground/80">
                     {item.draftBody}
                   </p>
                 )}

@@ -25,7 +25,6 @@ export function HeroBackground() {
       mqDesktop.matches && !mqMotion.matches && !saveData && !slowNet;
 
     if (!eligible) {
-      setShouldPlayVideo(false);
       return;
     }
 

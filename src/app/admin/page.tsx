@@ -22,11 +22,11 @@ function StatCard({
   return (
     <Card>
       <CardBody className="space-y-1">
-        <p className="text-sm text-white/55">{label}</p>
-        <p className={`text-2xl font-semibold tracking-tight ${accent || "text-white"}`}>
+        <p className="text-sm text-foreground/55">{label}</p>
+        <p className={`text-2xl font-semibold tracking-tight ${accent || "text-foreground"}`}>
           {typeof value === "number" ? value.toLocaleString() : value}
         </p>
-        {sub ? <p className="text-xs text-white/40">{sub}</p> : null}
+        {sub ? <p className="text-xs text-foreground/40">{sub}</p> : null}
       </CardBody>
     </Card>
   );
@@ -63,7 +63,7 @@ export default function AdminOverviewPage() {
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Platform overview</h1>
-          <p className="mt-1 text-sm text-white/55">
+          <p className="mt-1 text-sm text-foreground/55">
             Cross-tenant health, usage, and automation signals — updated{" "}
             {formatDate(new Date().toISOString(), "MMM d, yyyy h:mm a")}
           </p>
@@ -120,22 +120,22 @@ export default function AdminOverviewPage() {
           </CardHeader>
           <CardBody className="grid gap-6 sm:grid-cols-2">
             <div>
-              <p className="text-sm text-white/55">AI tokens consumed</p>
+              <p className="text-sm text-foreground/55">AI tokens consumed</p>
               <p className="mt-1 text-3xl font-semibold">{data.aiUsage.toLocaleString()}</p>
-              <p className="mt-1 text-xs text-white/40">Drafting, classification, summaries</p>
+              <p className="mt-1 text-xs text-foreground/40">Drafting, classification, summaries</p>
             </div>
             <div>
-              <p className="text-sm text-white/55">Reminders per active invoice</p>
+              <p className="text-sm text-foreground/55">Reminders per active invoice</p>
               <p className="mt-1 text-3xl font-semibold">
                 {(data.reminderVolume / Math.max(data.activeInvoices, 1)).toFixed(2)}
               </p>
-              <p className="mt-1 text-xs text-white/40">Rolling 30-day average</p>
+              <p className="mt-1 text-xs text-foreground/40">Rolling 30-day average</p>
             </div>
-            <div className="sm:col-span-2 rounded-xl border border-white/10 bg-white/[0.02] p-4">
+            <div className="sm:col-span-2 rounded-xl border border-foreground/10 bg-foreground/[0.02] p-4">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <p className="text-sm font-medium">Workflow health</p>
-                  <p className="text-xs text-white/45">
+                  <p className="text-xs text-foreground/45">
                     n8n orchestration, webhooks, and email pipeline
                   </p>
                 </div>
@@ -143,7 +143,7 @@ export default function AdminOverviewPage() {
                   {data.workflowHealth}
                 </span>
               </div>
-              <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/10">
+              <div className="mt-4 h-2 overflow-hidden rounded-full bg-foreground/10">
                 <div
                   className={`h-full rounded-full transition-all ${
                     data.workflowHealth === "healthy"
@@ -167,14 +167,14 @@ export default function AdminOverviewPage() {
               { label: "Active", value: data.activeSubscriptions, color: "bg-emerald-500" },
               { label: "Trial", value: data.trialSubscriptions, color: "bg-sky-500" },
               { label: "Past due", value: data.pastDue, color: "bg-rose-500" },
-              { label: "Cancelled", value: data.cancelled, color: "bg-white/30" },
+              { label: "Cancelled", value: data.cancelled, color: "bg-foreground/30" },
             ].map((row) => (
               <div key={row.label}>
                 <div className="mb-1 flex justify-between text-sm">
-                  <span className="text-white/70">{row.label}</span>
+                  <span className="text-foreground/70">{row.label}</span>
                   <span>{row.value}</span>
                 </div>
-                <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
+                <div className="h-1.5 overflow-hidden rounded-full bg-foreground/10">
                   <div
                     className={`h-full rounded-full ${row.color}`}
                     style={{

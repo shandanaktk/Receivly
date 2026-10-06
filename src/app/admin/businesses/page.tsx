@@ -9,6 +9,7 @@ import { api } from "@/lib/api";
 import { PLANS } from "@/lib/constants";
 import { formatDate } from "@/lib/format";
 import type { PlatformBusiness, SubscriptionStatus } from "@/types";
+import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 function planName(planId: string) {
@@ -23,7 +24,6 @@ function usagePercent(business: PlatformBusiness) {
 
 export default function AdminBusinessesPage() {
   const [businesses, setBusinesses] = useState<PlatformBusiness[]>([]);
-  const [suspended, setSuspended] = useState<Set<string>>(new Set());
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<SubscriptionStatus | "all">("all");
   const [loading, setLoading] = useState(true);
@@ -37,7 +37,7 @@ export default function AdminBusinessesPage() {
   }, []);
 
   useEffect(() => {
-    load();
+    void Promise.resolve().then(load);
   }, [load]);
 
   const filtered = useMemo(() => {
@@ -54,14 +54,11 @@ export default function AdminBusinessesPage() {
   }, [businesses, query, statusFilter]);
 
   const toggleSuspend = async (id: string) => {
+    const business = businesses.find((b) => b.id === id);
+    if (!business || !window.confirm(`${business.suspended ? "Reactivate" : "Suspend"} ${business.companyName}? ${business.suspended ? "Workspace access will resume." : "Workspace access will be restricted, while records remain intact."}`)) return;
     setActionId(id);
-    await new Promise((r) => setTimeout(r, 400));
-    setSuspended((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
+    await api.updatePlatformBusiness(id, { suspended: !business.suspended });
+    setBusinesses(await api.getPlatformBusinesses());
     setActionId(null);
   };
 
@@ -73,7 +70,7 @@ export default function AdminBusinessesPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Businesses</h1>
-        <p className="mt-1 text-sm text-white/55">
+        <p className="mt-1 text-sm text-foreground/55">
           Search and manage tenant workspaces — suspend/reactivate is demo-only local state.
         </p>
       </div>
@@ -90,9 +87,9 @@ export default function AdminBusinessesPage() {
           </div>
           <div className="w-full sm:w-48">
             <label className="block space-y-1.5 text-sm">
-              <span className="font-medium text-white/80">Status</span>
+              <span className="font-medium text-foreground/80">Status</span>
               <select
-                className="w-full rounded-xl border border-white/10 bg-[#0c0c18] px-3.5 py-2.5 text-white outline-none focus:border-[#a855f7]/50 focus:ring-2 focus:ring-[#a855f7]/20"
+                className="w-full rounded-xl border border-foreground/10 bg-elevated px-3.5 py-2.5 text-foreground outline-none focus:border-[#a855f7]/50 focus:ring-2 focus:ring-[#a855f7]/20"
                 value={statusFilter}
                 onChange={(e) =>
                   setStatusFilter(e.target.value as SubscriptionStatus | "all")
@@ -110,9 +107,9 @@ export default function AdminBusinessesPage() {
         </CardBody>
       </Card>
 
-      <div className="hidden overflow-hidden rounded-2xl border border-white/10 md:block">
+      <div className="hidden overflow-hidden rounded-2xl border border-foreground/10 md:block">
         <table className="w-full text-left text-sm">
-          <thead className="border-b border-white/10 bg-white/[0.03] text-white/55">
+          <thead className="border-b border-foreground/10 bg-foreground/[0.03] text-foreground/55">
             <tr>
               <th className="px-4 py-3 font-medium">Company</th>
               <th className="px-4 py-3 font-medium">Plan</th>
@@ -125,13 +122,13 @@ export default function AdminBusinessesPage() {
           </thead>
           <tbody>
             {filtered.map((b) => {
-              const isSuspended = suspended.has(b.id);
+              const isSuspended = Boolean(b.suspended);
               const pct = usagePercent(b);
               return (
-                <tr key={b.id} className="border-b border-white/5 hover:bg-white/[0.02]">
+                <tr key={b.id} className="border-b border-foreground/5 hover:bg-foreground/[0.02]">
                   <td className="px-4 py-3">
-                    <div className="font-medium">{b.companyName}</div>
-                    <div className="text-xs text-white/45">{b.ownerEmail}</div>
+                    <Link href={`/admin/businesses/${b.id}`} className="font-medium hover:text-violet-300 hover:underline">{b.companyName}</Link>
+                    <div className="text-xs text-foreground/45">{b.ownerEmail}</div>
                     {isSuspended ? (
                       <Badge status="paused" className="mt-1">
                         Suspended
@@ -146,7 +143,7 @@ export default function AdminBusinessesPage() {
                     <div>
                       {b.usage} / {PLANS.find((p) => p.id === b.planId)?.invoiceAllowance ?? "—"}
                     </div>
-                    <div className="mt-1 h-1.5 w-24 overflow-hidden rounded-full bg-white/10">
+                    <div className="mt-1 h-1.5 w-24 overflow-hidden rounded-full bg-foreground/10">
                       <div
                         className={`h-full rounded-full ${pct >= 90 ? "bg-rose-500" : pct >= 70 ? "bg-amber-500" : "bg-emerald-500"}`}
                         style={{ width: `${pct}%` }}
@@ -154,7 +151,7 @@ export default function AdminBusinessesPage() {
                     </div>
                   </td>
                   <td className="px-4 py-3">{b.users}</td>
-                  <td className="px-4 py-3 text-white/60">{formatDate(b.lastActiveAt, "MMM d, yyyy")}</td>
+                  <td className="px-4 py-3 text-foreground/60">{formatDate(b.lastActiveAt, "MMM d, yyyy")}</td>
                   <td className="px-4 py-3">
                     <Button
                       size="sm"
@@ -175,40 +172,40 @@ export default function AdminBusinessesPage() {
           </tbody>
         </table>
         {filtered.length === 0 ? (
-          <p className="px-4 py-8 text-center text-sm text-white/50">No businesses match your filters.</p>
+          <p className="px-4 py-8 text-center text-sm text-foreground/50">No businesses match your filters.</p>
         ) : null}
       </div>
 
       <div className="space-y-3 md:hidden">
         {filtered.map((b) => {
-          const isSuspended = suspended.has(b.id);
+          const isSuspended = Boolean(b.suspended);
           const pct = usagePercent(b);
           return (
             <Card key={b.id}>
               <CardHeader className="flex flex-wrap items-start justify-between gap-2">
                 <div>
-                  <h3 className="font-medium">{b.companyName}</h3>
-                  <p className="text-xs text-white/45">{b.ownerEmail}</p>
+                  <h3 className="font-medium"><Link href={`/admin/businesses/${b.id}`} className="hover:underline">{b.companyName}</Link></h3>
+                  <p className="text-xs text-foreground/45">{b.ownerEmail}</p>
                 </div>
                 <Badge status={b.status} />
               </CardHeader>
               <CardBody className="space-y-3 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-white/55">Plan</span>
+                  <span className="text-foreground/55">Plan</span>
                   <span>{planName(b.planId)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-white/55">Usage</span>
+                  <span className="text-foreground/55">Usage</span>
                   <span>
                     {b.usage} invoices ({pct}%)
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-white/55">Users</span>
+                  <span className="text-foreground/55">Users</span>
                   <span>{b.users}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-white/55">Last active</span>
+                  <span className="text-foreground/55">Last active</span>
                   <span>{formatDate(b.lastActiveAt, "MMM d, yyyy")}</span>
                 </div>
                 {isSuspended ? <Badge status="paused">Suspended (demo)</Badge> : null}
@@ -227,7 +224,7 @@ export default function AdminBusinessesPage() {
         })}
       </div>
 
-      <p className="text-xs text-white/40">
+      <p className="text-xs text-foreground/40">
         Showing {filtered.length} of {businesses.length} businesses · Created dates from{" "}
         {formatDate(businesses[0]?.createdAt)} onward
       </p>

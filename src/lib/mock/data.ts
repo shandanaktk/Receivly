@@ -47,6 +47,9 @@ export const MOCK_WORKSPACE: Workspace = {
   quietHoursEnd: "08:00",
   maxReminders: 5,
   permittedDays: [1, 2, 3, 4, 5],
+  reminderDays: [-3, 0, 5, 21, 35],
+  exclusionTags: ["do-not-contact"],
+  ccPolicy: "none",
 };
 
 export const MOCK_USERS: User[] = [
@@ -246,6 +249,7 @@ export const MOCK_INVOICES: Invoice[] = [
     amountPaid: 0,
     balance: 7600,
     promisedDate: "2026-10-10",
+    assignedTo: "user_fin",
     collectorPaused: true,
     tags: ["retainer"],
     createdAt: "2026-09-01T10:00:00.000Z",
@@ -659,6 +663,7 @@ export const MOCK_NOTIFICATIONS: NotificationItem[] = [
 ];
 
 export const MOCK_DASHBOARD: DashboardSummary = {
+  currency: "USD",
   totalOutstanding: 29100,
   overdueAmount: 18400,
   overdueCount: 3,
@@ -691,6 +696,7 @@ export const MOCK_DASHBOARD: DashboardSummary = {
 };
 
 export const MOCK_REPORTS: ReportSummary = {
+  currency: "USD",
   outstandingByCustomer: [
     { name: "Brightline Agency", amount: 12400, overdue: 4800 },
     { name: "Harbor Logistics", amount: 8200, overdue: 8200 },

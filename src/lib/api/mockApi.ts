@@ -34,9 +34,18 @@ let invoices = [...MOCK_INVOICES];
 let conversations = [...MOCK_CONVERSATIONS];
 let notifications = [...MOCK_NOTIFICATIONS];
 let approvals = [...MOCK_APPROVALS];
+let auditLogs = [...MOCK_AUDIT_LOGS];
+let platformBusinesses = [...MOCK_PLATFORM_BUSINESSES];
+let timeline = [...MOCK_TIMELINE];
 let workspace: Workspace = { ...MOCK_WORKSPACE };
 let team = [...MOCK_TEAM];
 let sessionUser: User | null = null;
+
+function customerWithBalances(customer: Customer): Customer {
+  const relevant = invoices.filter((i) => i.customerId === customer.id && i.currency === customer.currency && !["draft", "paid", "void", "written_off"].includes(i.status));
+  const today = new Date().toISOString().slice(0, 10);
+  return { ...customer, outstandingBalance: relevant.reduce((n, i) => n + i.balance, 0), overdueBalance: relevant.filter((i) => i.dueDate < today).reduce((n, i) => n + i.balance, 0) };
+}
 
 export const mockApi = {
   async login(email: string, password: string) {
@@ -105,12 +114,14 @@ export const mockApi = {
 
   async resetPassword(_token: string, password: string) {
     await delay();
+    void _token;
     if (password.length < 8) throw new Error("Password must be at least 8 characters.");
     return { ok: true };
   },
 
   async verifyEmail(_token: string) {
     await delay();
+    void _token;
     return { ok: true };
   },
 
@@ -145,27 +156,37 @@ export const mockApi = {
     return member;
   },
 
+  async updateTeamMember(id: string, patch: Partial<(typeof team)[number]>) {
+    await delay();
+    team = team.map((m) => m.id === id ? { ...m, ...patch } : m);
+    const member = team.find((m) => m.id === id);
+    if (!member) throw new Error("Team member not found.");
+    return member;
+  },
+
   async getCustomers(query?: string) {
     await delay();
-    if (!query) return customers;
+    if (!query) return customers.map(customerWithBalances);
     const q = query.toLowerCase();
     return customers.filter(
       (c) =>
         c.name.toLowerCase().includes(q) ||
         c.email.toLowerCase().includes(q) ||
         c.primaryContact.toLowerCase().includes(q),
-    );
+    ).map(customerWithBalances);
   },
 
   async getCustomer(id: string) {
     await delay();
     const customer = customers.find((c) => c.id === id);
     if (!customer) throw new Error("Customer not found");
-    return customer;
+    return customerWithBalances(customer);
   },
 
   async saveCustomer(input: Partial<Customer> & { name: string; email: string }) {
     await delay();
+    const duplicate = customers.find((c) => c.email.toLowerCase() === input.email.trim().toLowerCase() && c.id !== input.id);
+    if (duplicate) throw new Error(`A customer with ${input.email} already exists. Review that record before adding another.`);
     if (input.id) {
       customers = customers.map((c) => (c.id === input.id ? { ...c, ...input } : c));
       return customers.find((c) => c.id === input.id)!;
@@ -239,10 +260,15 @@ export const mockApi = {
 
   async saveInvoice(input: Partial<Invoice> & { customerId: string }) {
     await delay();
+    if (input.number && invoices.some((i) => i.number.toLowerCase() === input.number!.toLowerCase() && i.id !== input.id)) {
+      throw new Error(`Invoice ${input.number} already exists in this workspace.`);
+    }
     if (input.id) {
+      if (!invoices.some((i) => i.id === input.id)) throw new Error("Invoice not found.");
       invoices = invoices.map((i) =>
         i.id === input.id ? { ...i, ...input, updatedAt: new Date().toISOString() } : i,
       );
+      timeline = [{ id: `tl_${Date.now()}`, invoiceId: input.id, type: input.collectorPaused === undefined ? "edited" as const : input.collectorPaused ? "paused" as const : "resumed" as const, title: input.collectorPaused === undefined ? "Invoice updated" : input.collectorPaused ? "Collector paused" : "Collector resumed", actor: "Demo user", createdAt: new Date().toISOString() }, ...timeline];
       return invoices.find((i) => i.id === input.id)!;
     }
     const amount =
@@ -256,7 +282,7 @@ export const mockApi = {
       id: `inv_${Date.now()}`,
       workspaceId: workspace.id,
       customerId: input.customerId,
-      number: `${workspace.invoicePrefix}${workspace.nextInvoiceNumber}`,
+      number: input.number || `${workspace.invoicePrefix}${workspace.nextInvoiceNumber}`,
       status: input.status || "draft",
       issueDate: input.issueDate || new Date().toISOString().slice(0, 10),
       dueDate: input.dueDate || new Date().toISOString().slice(0, 10),
@@ -276,17 +302,70 @@ export const mockApi = {
     };
     workspace = { ...workspace, nextInvoiceNumber: workspace.nextInvoiceNumber + 1 };
     invoices = [created, ...invoices];
+    timeline = [{ id: `tl_${Date.now()}`, invoiceId: created.id, type: "created" as const, title: "Invoice created", actor: "Demo user", createdAt: new Date().toISOString() }, ...timeline];
     return created;
+  },
+
+  async sendInvoice(id: string) {
+    await delay();
+    const invoice = invoices.find((i) => i.id === id);
+    if (!invoice || invoice.status !== "draft") throw new Error("Only draft invoices can be sent from this demo.");
+    const updated: Invoice = { ...invoice, status: "sent", updatedAt: new Date().toISOString() };
+    invoices = invoices.map((i) => i.id === id ? updated : i);
+    timeline = [{ id: `tl_${Date.now()}`, invoiceId: id, type: "sent", title: "Invoice send simulated", description: "No email was delivered in this frontend demo.", actor: "Demo user", createdAt: new Date().toISOString() }, ...timeline];
+    return updated;
+  },
+
+  async voidInvoice(id: string) {
+    await delay();
+    const invoice = invoices.find((i) => i.id === id);
+    if (!invoice || invoice.status === "paid") throw new Error("A paid invoice cannot be voided.");
+    const updated: Invoice = { ...invoice, status: "void", collectorPaused: true, updatedAt: new Date().toISOString() };
+    invoices = invoices.map((i) => i.id === id ? updated : i);
+    timeline = [{ id: `tl_${Date.now()}`, invoiceId: id, type: "status_change", title: "Invoice voided", actor: "Demo user", createdAt: new Date().toISOString() }, ...timeline];
+    return updated;
+  },
+
+  async deleteDraft(id: string) {
+    await delay();
+    const invoice = invoices.find((i) => i.id === id);
+    if (!invoice || invoice.status !== "draft") throw new Error("Only drafts can be deleted.");
+    invoices = invoices.filter((i) => i.id !== id);
+    timeline = timeline.filter((t) => t.invoiceId !== id);
+    return { ok: true };
+  },
+
+  async addInvoiceAttachment(id: string, file: { name: string; size: number; type: string }) {
+    await delay();
+    const invoice = invoices.find((i) => i.id === id);
+    if (!invoice) throw new Error("Invoice not found.");
+    if (file.size > 10_000_000 || !["application/pdf", "image/png", "image/jpeg"].includes(file.type)) throw new Error("Use PDF, PNG, or JPEG files under 10 MB.");
+    const updated = { ...invoice, attachments: [...(invoice.attachments || []), { ...file, id: `att_${Date.now()}` }] };
+    invoices = invoices.map((i) => i.id === id ? updated : i);
+    timeline = [{ id: `tl_${Date.now()}`, invoiceId: id, type: "edited", title: `Attachment added: ${file.name}`, description: "Demo metadata only; file storage connects with the backend.", actor: "Demo user", createdAt: new Date().toISOString() }, ...timeline];
+    return updated;
   },
 
   async getTimeline(invoiceId: string) {
     await delay();
-    return MOCK_TIMELINE.filter((t) => t.invoiceId === invoiceId);
+    return timeline.filter((t) => t.invoiceId === invoiceId);
   },
 
-  async getDashboard() {
+  async getDashboard(currency = "USD") {
     await delay();
-    return MOCK_DASHBOARD;
+    const today = new Date().toISOString().slice(0, 10);
+    const active = invoices.filter((i) => i.currency === currency && !["draft", "paid", "void", "written_off"].includes(i.status));
+    const overdue = active.filter((i) => i.dueDate < today);
+    const age = (i: Invoice) => Math.ceil((Date.parse(`${today}T00:00:00Z`) - Date.parse(`${i.dueDate}T00:00:00Z`)) / 86400000);
+    const sum = (items: Invoice[]) => items.reduce((total, i) => total + i.balance, 0);
+    const aging = [
+      { label: "Current", amount: sum(active.filter((i) => age(i) <= 0)) },
+      { label: "1–30 days", amount: sum(active.filter((i) => age(i) > 0 && age(i) <= 30)) },
+      { label: "31–60 days", amount: sum(active.filter((i) => age(i) > 30 && age(i) <= 60)) },
+      { label: "61–90 days", amount: sum(active.filter((i) => age(i) > 60 && age(i) <= 90)) },
+      { label: "90+ days", amount: sum(active.filter((i) => age(i) > 90)) },
+    ];
+    return { ...MOCK_DASHBOARD, currency, totalOutstanding: sum(active), overdueAmount: sum(overdue), overdueCount: overdue.length, promisedAmount: sum(active.filter((i) => i.status === "payment_promised")), disputedAmount: sum(active.filter((i) => i.status === "disputed")), collectedThisMonth: invoices.filter((i) => i.currency === currency && i.updatedAt.slice(0, 7) === today.slice(0, 7)).reduce((n, i) => n + i.amountPaid, 0), automationStatus: workspace.aiCollectorActive ? "active" as const : "paused" as const, aging };
   },
 
   async getConversations(filter: ConversationFilter = "all") {
@@ -319,11 +398,24 @@ export const mockApi = {
 
   async resolveApproval(id: string, action: "approve" | "reject" | "edit", body?: string) {
     await delay();
+    const approval = approvals.find((a) => a.id === id);
+    if (!approval) throw new Error("Approval item not found.");
+    conversations = conversations.map((c) => c.id === approval.conversationId ? { ...c, needsApproval: false, messages: c.messages.some((m) => m.status === "draft") ? c.messages.map((m) => m.status === "draft" ? { ...m, body: body || m.body, status: action === "reject" ? "draft" as const : "sent" as const, requiresApproval: false } : m) : action === "reject" ? c.messages : [...c.messages, { id: `msg_${Date.now()}`, conversationId: c.id, direction: "outbound" as const, channel: "email" as const, body: body || approval.draftBody, status: "sent" as const, createdAt: new Date().toISOString() }] } : c);
     approvals = approvals.filter((a) => a.id !== id);
-    if (action === "edit" && body) {
-      // demo: keep rejected from queue after edit+approve simulation
-    }
+    auditLogs = [{ id: `audit_${Date.now()}`, workspaceId: workspace.id, user: "Demo user", action: `approval.${action}`, entity: approval.invoiceId, date: new Date().toISOString() }, ...auditLogs];
     return { ok: true };
+  },
+
+  async saveConversationDraft(id: string, body: string) {
+    await delay();
+    conversations = conversations.map((c) => c.id === id ? { ...c, messages: c.messages.some((m) => m.status === "draft") ? c.messages.map((m) => m.status === "draft" ? { ...m, body } : m) : [...c.messages, { id: `msg_${Date.now()}`, conversationId: id, direction: "outbound" as const, channel: "email" as const, body, status: "draft" as const, createdAt: new Date().toISOString() }] } : c);
+    return this.getConversation(id);
+  },
+
+  async sendConversationDraft(id: string, body: string) {
+    await delay();
+    conversations = conversations.map((c) => c.id === id ? { ...c, needsApproval: false, messages: c.messages.some((m) => m.status === "draft") ? c.messages.map((m) => m.status === "draft" ? { ...m, body, status: "sent" as const } : m) : [...c.messages, { id: `msg_${Date.now()}`, conversationId: id, direction: "outbound" as const, channel: "email" as const, body, status: "sent" as const, createdAt: new Date().toISOString() }] } : c);
+    return this.getConversation(id);
   },
 
   async getNotifications() {
@@ -337,9 +429,14 @@ export const mockApi = {
     return notifications;
   },
 
-  async getReports() {
+  async getReports(currency = "USD") {
     await delay();
-    return MOCK_REPORTS;
+    const today = new Date().toISOString().slice(0, 10);
+    const active = invoices.filter((i) => i.currency === currency && !["draft", "paid", "void", "written_off"].includes(i.status));
+    const overdue = (i: Invoice) => i.dueDate < today;
+    const outstandingByCustomer = customers.map((c) => ({ name: c.name, amount: active.filter((i) => i.customerId === c.id).reduce((n, i) => n + i.balance, 0), overdue: active.filter((i) => i.customerId === c.id && overdue(i)).reduce((n, i) => n + i.balance, 0) })).filter((row) => row.amount > 0);
+    const dashboard = await this.getDashboard(currency);
+    return { ...MOCK_REPORTS, currency, outstandingByCustomer, agingBands: dashboard.aging, collectedAmount: invoices.filter((i) => i.currency === currency).reduce((n, i) => n + i.amountPaid, 0) };
   },
 
   async getPlatformOverview() {
@@ -349,12 +446,20 @@ export const mockApi = {
 
   async getPlatformBusinesses() {
     await delay();
-    return MOCK_PLATFORM_BUSINESSES;
+    return platformBusinesses;
+  },
+
+  async updatePlatformBusiness(id: string, patch: Partial<(typeof platformBusinesses)[number]>) {
+    await delay();
+    if (!platformBusinesses.some((b) => b.id === id)) throw new Error("Business not found.");
+    platformBusinesses = platformBusinesses.map((b) => b.id === id ? { ...b, ...patch } : b);
+    auditLogs = [{ id: `audit_${Date.now()}`, workspaceId: id, user: "Platform Owner", action: "business.settings_updated", entity: id, date: new Date().toISOString() }, ...auditLogs];
+    return platformBusinesses.find((b) => b.id === id)!;
   },
 
   async getAuditLogs() {
     await delay();
-    return MOCK_AUDIT_LOGS;
+    return auditLogs;
   },
 
   async submitContact(payload: ContactSubmission) {
@@ -365,15 +470,44 @@ export const mockApi = {
     return { ok: true };
   },
 
-  async importCsvPreview(type: "customers" | "invoices", rows: number) {
-    await delay(400);
-    return {
-      type,
-      valid: Math.max(rows - 1, 0),
-      errors: rows > 0 ? 1 : 0,
-      duplicates: 0,
-      sample: ["Row 2 looks valid", "Row 3 missing email (demo error)"],
-    };
+  async importCsvPreview(type: "customers" | "invoices", rows: Record<string, string>[]) {
+    await delay(180);
+    const details = rows.map((row, index) => {
+      const issues: string[] = [];
+      const email = (row.email || "").trim().toLowerCase();
+      const name = (row.customer_name || "").trim();
+      if (!name) issues.push("customer_name is required");
+      if (!/^\S+@\S+\.\S+$/.test(email)) issues.push("valid email is required");
+      const duplicate = customers.some((c) => c.email.toLowerCase() === email);
+      if (type === "invoices") {
+        const amount = Number(row.amount);
+        if (!row.invoice_number?.trim()) issues.push("invoice_number is required");
+        if (!Number.isFinite(amount) || amount <= 0) issues.push("amount must be positive");
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(row.due_date || "") || Number.isNaN(Date.parse(row.due_date))) issues.push("due_date must be YYYY-MM-DD");
+        if (!/^[A-Z]{3}$/.test((row.currency || "").toUpperCase())) issues.push("currency must be a three-letter code");
+      }
+      const invoiceDuplicate = type === "invoices" && invoices.some((i) => i.number.toLowerCase() === row.invoice_number?.toLowerCase());
+      if (invoiceDuplicate) issues.push("invoice number already exists");
+      return { row: index + 2, values: row, issues, duplicate: type === "customers" && duplicate };
+    });
+    return { type, valid: details.filter((d) => d.issues.length === 0 && !d.duplicate).length, errors: details.filter((d) => d.issues.length > 0).length, duplicates: details.filter((d) => d.duplicate).length, details };
+  },
+
+  async importCsv(type: "customers" | "invoices", rows: Record<string, string>[]) {
+    const preview = await this.importCsvPreview(type, rows);
+    if (preview.errors || preview.duplicates) throw new Error("Resolve invalid and duplicate rows before importing.");
+    let imported = 0;
+    for (const row of rows) {
+      if (type === "customers") {
+        await this.saveCustomer({ name: row.customer_name, email: row.email, phone: row.phone, country: row.country || workspace.country, tags: (row.tags || "").split("|").filter(Boolean) });
+      } else {
+        let customer = customers.find((c) => c.email.toLowerCase() === row.email.toLowerCase());
+        if (!customer) customer = await this.saveCustomer({ name: row.customer_name, email: row.email });
+        await this.saveInvoice({ customerId: customer.id, number: row.invoice_number, dueDate: row.due_date, currency: row.currency.toUpperCase(), amount: Number(row.amount), poReference: row.po_reference, status: "draft" });
+      }
+      imported++;
+    }
+    return { imported };
   },
 
   async recordPayment(
@@ -383,6 +517,8 @@ export const mockApi = {
     await delay();
     const invoice = invoices.find((i) => i.id === invoiceId);
     if (!invoice) throw new Error("Invoice not found");
+    if (!Number.isFinite(payment.amount) || payment.amount <= 0 || payment.amount > invoice.balance) throw new Error("Enter a payment greater than zero and no more than the remaining balance.");
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(payment.date)) throw new Error("Enter a valid payment date.");
     const amountPaid = invoice.amountPaid + payment.amount;
     const balance = Math.max(invoice.amount - amountPaid, 0);
     const status = balance <= 0 ? "paid" : amountPaid > 0 ? "partially_paid" : invoice.status;
@@ -391,9 +527,11 @@ export const mockApi = {
       amountPaid,
       balance,
       status: status as Invoice["status"],
+      collectorPaused: balance <= 0 ? true : invoice.collectorPaused,
       updatedAt: new Date().toISOString(),
     };
     invoices = invoices.map((i) => (i.id === invoiceId ? updated : i));
+    timeline = [{ id: `tl_${Date.now()}`, invoiceId, type: "payment", title: `Payment recorded: ${payment.amount} ${invoice.currency}`, description: `${payment.method}${payment.reference ? ` · ${payment.reference}` : ""}`, actor: "Demo user", createdAt: new Date().toISOString() }, ...timeline];
     return updated;
   },
 
@@ -402,6 +540,7 @@ export const mockApi = {
     patch: Partial<(typeof conversations)[0]>,
   ) {
     await delay();
+    if (patch.classificationOverride || patch.promisedDateOverride) auditLogs = [{ id: `audit_${Date.now()}`, workspaceId: workspace.id, user: "Demo user", action: "conversation.classification_override", entity: id, date: new Date().toISOString() }, ...auditLogs];
     conversations = conversations.map((c) => (c.id === id ? { ...c, ...patch } : c));
     const conversation = conversations.find((c) => c.id === id);
     if (!conversation) throw new Error("Conversation not found");

@@ -1,97 +1,43 @@
-# Receivly AI
+# Receivly AI — Milestone 1 frontend
 
-AI-powered invoice management & payment collection SaaS — Milestone 1 frontend (design system, marketing site, auth, workspace app, admin panel) with a removable mock API layer.
+Responsive Next.js frontend for the public site, business workspace, public invoice view, and platform owner console described in the proposal. This is a working **demo**: the data and actions are simulated through one API boundary. It does not authenticate users securely, send email, collect payments, or persist records to a database.
 
-## Getting started
+## Run locally
 
 ```bash
-cp .env.example .env.local
-npm install
+npm ci
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open `http://localhost:3000`. No environment variables are needed for the demo.
 
-## Demo credentials
+| Demo role | Email | Password |
+| --- | --- | --- |
+| Business | `demo@receivly.ai` | `Demo1234!` |
+| Platform owner | `admin@receivly.ai` | `Admin1234!` |
 
-| Role | Email | Password | Lands on |
-|------|-------|----------|----------|
-| Business workspace | `demo@receivly.ai` | `Demo1234!` | `/app/dashboard` |
-| Platform owner | `admin@receivly.ai` | `Admin1234!` | `/admin` |
+## Screens and demo behavior
 
-## Mock data → live backend
+- Public: home, features, pricing, contact, legal pages, sign in/up and recovery, public invoice and browser print/PDF.
+- Workspace: onboarding, dashboard/work queue, customers, invoices, CSV import, invoice activity, conversations, approvals, AI Collector, reports, notifications, billing, profile, and team/workspace settings.
+- Owner: overview, businesses and business detail, monitoring, plans/content, and audit log.
+- Desktop and mobile layouts, light/dark mode, keyboard focus styles, reduced motion support. The landing video is deferred and disabled on small screens, slow connections, Save-Data, and reduced motion.
+- CSV files are parsed and validated in the browser. The sample records and all simulated actions stay in the mock API. Changes survive client-side navigation but reset on a full reload or server restart.
+- Money summaries filter by currency. They never add balances from different currencies together.
 
-All demo data lives under `src/lib/mock/`. The app talks only to `src/lib/api` (`api.*` methods).
+## Backend handoff
 
-When the backend is ready:
+Core data workflows call the typed `api` facade in `src/lib/api/index.ts`. Demo implementations and records are in `src/lib/api/mockApi.ts` and `src/lib/mock/`; the owner monitoring and configuration fixtures are also isolated there. For Milestone 2, implement the same `ApiClient` interface in a live adapter, then change the facade export and wire the owner fixtures to live endpoints. Authentication, authorization, tenant isolation, durable storage, webhooks, email, checkout, and any publicly accessible invoice token validation must be enforced by the backend. No `NEXT_PUBLIC_USE_MOCK` environment switch is active.
 
-1. Implement `src/lib/api/liveApi.ts` with the same method signatures as `mockApi`
-2. Point `src/lib/api/index.ts` at `liveApi`
-3. Set `NEXT_PUBLIC_USE_MOCK=false`
-4. Delete `src/lib/mock/` when you no longer need sample data
+## Deploy on Dokploy
 
-## Landing page performance (mobile)
-
-- Instant CSS atmosphere + poster image (`/hero-poster.jpg`)
-- Desktop-only deferred video (`/hero.mp4` ~200KB, 12s loop)
-- No video on mobile / Save-Data / slow networks / `prefers-reduced-motion`
-- No Three.js / WebGL
-
-## Deploy on Dokploy (from GitHub)
-
-This is a **Next.js Node server** (not a static export). Prefer **Dockerfile** build type.
-
-| Field | Value |
-|-------|--------|
-| **Provider / source** | GitHub |
-| **Repository** | your Receivly fork/repo |
-| **Branch** | `main` (or your deploy branch) |
-| **Build type** | `Dockerfile` |
-| **Dockerfile path** | `Dockerfile` (repo root) |
-| **Docker context / build path** | `.` or `/` (repository root) |
-| **Publish directory** | leave **empty** / not used (not a static site) |
-| **Port** | `3000` |
-| **Start command** | not needed when using Dockerfile `CMD` |
-| **Health check path** | `/` |
-
-### Environment variables (Dokploy)
-
-| Name | Value |
-|------|--------|
-| `NEXT_PUBLIC_USE_MOCK` | `true` (until backend exists) |
-| `PORT` | `3000` |
-| `NODE_ENV` | `production` (optional; image sets this) |
-
-### Alternative: Nixpacks / Node (no Docker)
-
-| Field | Value |
-|-------|--------|
-| Build type | Nixpacks / Node |
-| Build path | `.` |
-| Install command | `npm ci` |
-| Build command | `npm run build` |
-| Start command | `npm start` |
-| Port | `3000` |
-| Publish directory | empty |
-
-Local Docker test:
+Keep the existing **Dockerfile** build, repository root as build context, and port `3000`. The image runs the standalone Next.js server. Redeploy after merging these changes; no Dokploy configuration change is required for this frontend. An existing `NEXT_PUBLIC_USE_MOCK` variable can be removed because it is unused. Do not treat this demo as a production billing or collection service until the backend is connected.
 
 ```bash
+npm run lint
+npm run build
 docker build -t receivly .
-docker run -p 3000:3000 -e NEXT_PUBLIC_USE_MOCK=true receivly
+docker run -p 3000:3000 receivly
 ```
 
-## Milestone 1 routes (summary)
-
-**Public:** `/`, `/features`, `/pricing`, `/contact`, legal pages, auth (`/login`, `/signup`, …), public invoice `/invoice/[token]`
-
-**Workspace:** `/app/onboarding`, dashboard, customers, invoices (+ CSV import), conversations, approvals, AI Collector, reports, billing, notifications, settings, profile
-
-**Admin:** `/admin`, businesses, monitoring, plans, audit
-
-## Scripts
-
-- `npm run dev` — development
-- `npm run build` — production build (standalone)
-- `npm run start` — production server
-- `npm run lint` — ESLint
+The included fonts are self-hosted under `public/fonts/` with their OFL licenses. The optional hero video and poster are static assets. `scripts/visual-check.mjs` is a local browser check for viewport overflow and screenshots.

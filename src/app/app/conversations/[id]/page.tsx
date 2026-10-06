@@ -4,10 +4,12 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { Textarea } from "@/components/ui/Textarea";
+import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
 import { PageLoader } from "@/components/ui/Spinner";
 import { api } from "@/lib/api";
 import { formatRelative, statusLabel } from "@/lib/format";
-import type { Conversation } from "@/types";
+import type { Conversation, ReplyCategory, TeamMember } from "@/types";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
@@ -21,32 +23,49 @@ export default function ConversationDetailPage() {
   const [nextAction, setNextAction] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [team, setTeam] = useState<TeamMember[]>([]);
+  const [assignedTo, setAssignedTo] = useState("");
+  const [classification, setClassification] = useState<ReplyCategory | "">("");
+  const [promisedDate, setPromisedDate] = useState("");
+  const [message, setMessage] = useState("");
 
   const load = useCallback(async () => {
     setLoading(true);
-    const c = await api.getConversation(id);
+    const [c, members] = await Promise.all([api.getConversation(id), api.getTeam()]);
+    setTeam(members.filter((m) => m.status === "active"));
     setConversation(c);
     setDraft(c.messages.find((m) => m.status === "draft")?.body || "");
     setPauseReason(c.pauseReason || "");
     setNextAction(c.nextAction || "");
+    setAssignedTo(c.assignedTo || "");
+    setClassification(c.classificationOverride || "");
+    setPromisedDate(c.promisedDateOverride || "");
     setLoading(false);
   }, [id]);
 
   useEffect(() => {
-    void load();
+    void Promise.resolve().then(load);
   }, [load]);
 
   const approveDraft = async () => {
+    if (!draft.trim()) { setMessage("Write a reply before sending."); return; }
+    if (!window.confirm("Approve this draft? The demo will update its status, but no email will be delivered.")) return;
     setSaving(true);
-    await api.resolveApproval("demo", "approve");
-    await api.updateConversation(id, { needsApproval: false, unread: false });
+    const item = (await api.getApprovals()).find((a) => a.conversationId === id);
+    if (item) await api.resolveApproval(item.id, "edit", draft);
+    else await api.sendConversationDraft(id, draft);
+    await api.updateConversation(id, { unread: false });
     await load();
+    setMessage("Reply marked sent in this demo. No email was delivered.");
     setSaving(false);
   };
 
+  const saveDraft = async () => { setSaving(true); await api.saveConversationDraft(id, draft); await load(); setMessage("Draft saved."); setSaving(false); };
+  const rejectDraft = async () => { const item = (await api.getApprovals()).find((a) => a.conversationId === id); if (!item || !window.confirm("Reject this draft and remove it from the approval queue?")) return; await api.resolveApproval(item.id, "reject"); await load(); setMessage("Draft rejected. You can still edit and send a manual reply."); };
+
   const saveEdits = async () => {
     setSaving(true);
-    await api.updateConversation(id, { pauseReason, nextAction });
+    await api.updateConversation(id, { pauseReason, nextAction, assignedTo: assignedTo || undefined, classificationOverride: classification || undefined, promisedDateOverride: promisedDate || undefined });
     await load();
     setSaving(false);
   };
@@ -74,9 +93,10 @@ export default function ConversationDetailPage() {
 
   return (
     <div className="space-y-6">
+      {message && <p role="status" className="rounded-xl border border-violet-500/25 bg-violet-500/10 p-3 text-sm text-foreground/75">{message}</p>}
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
-          <Link href="/app/conversations" className="text-sm text-white/50 hover:text-white">
+          <Link href="/app/conversations" className="text-sm text-foreground/50 hover:text-foreground">
             ← Conversations
           </Link>
           <h1 className="mt-2 text-xl font-semibold">{conversation.subject}</h1>
@@ -86,7 +106,7 @@ export default function ConversationDetailPage() {
               <Badge status="disputed">{statusLabel(conversation.aiCategory)}</Badge>
             ) : null}
             {conversation.aiConfidence != null ? (
-              <span className="text-xs text-white/45">
+              <span className="text-xs text-foreground/45">
                 AI confidence: {Math.round(conversation.aiConfidence * 100)}%
               </span>
             ) : null}
@@ -100,7 +120,7 @@ export default function ConversationDetailPage() {
           </Link>
           {conversation.needsApproval ? (
             <Button size="sm" onClick={() => void approveDraft()} disabled={saving}>
-              Approve & send
+              Approve & send (demo)
             </Button>
           ) : null}
         </div>
@@ -118,13 +138,13 @@ export default function ConversationDetailPage() {
                   key={msg.id}
                   className={`rounded-xl border p-4 text-sm ${
                     msg.direction === "inbound"
-                      ? "border-white/10 bg-white/[0.03]"
+                      ? "border-foreground/10 bg-foreground/[0.03]"
                       : msg.direction === "internal"
                         ? "border-amber-500/20 bg-amber-500/5"
                         : "border-fuchsia-500/20 bg-fuchsia-500/5 ml-4 sm:ml-8"
                   }`}
                 >
-                  <div className="mb-2 flex flex-wrap items-center gap-2 text-xs text-white/45">
+                  <div className="mb-2 flex flex-wrap items-center gap-2 text-xs text-foreground/45">
                     <span className="capitalize">{msg.direction}</span>
                     <span>·</span>
                     <span>{formatRelative(msg.createdAt)}</span>
@@ -132,16 +152,16 @@ export default function ConversationDetailPage() {
                     {msg.status === "draft" ? <Badge status="draft">Draft</Badge> : null}
                   </div>
                   {msg.subject ? <p className="mb-1 font-medium">{msg.subject}</p> : null}
-                  <p className="whitespace-pre-wrap text-white/80">{msg.body}</p>
+                  <p className="whitespace-pre-wrap text-foreground/80">{msg.body}</p>
                 </div>
               ))}
             </CardBody>
           </Card>
 
-          {conversation.needsApproval || draft ? (
+          {(
             <Card>
               <CardHeader>
-                <h2 className="font-medium">Edit draft</h2>
+                <h2 className="font-medium">Draft or manual reply</h2>
               </CardHeader>
               <CardBody className="space-y-3">
                 <Textarea
@@ -150,24 +170,28 @@ export default function ConversationDetailPage() {
                   rows={6}
                 />
                 <div className="flex gap-2">
-                  <Button size="sm" onClick={() => void approveDraft()} disabled={saving}>
-                    Approve & send
+                  <Button size="sm" onClick={() => void approveDraft()} disabled={saving || !draft.trim()}>
+                    {conversation.needsApproval ? "Approve & send" : "Manual send"}
                   </Button>
-                  <Button size="sm" variant="secondary" disabled={saving}>
+                  <Button size="sm" variant="secondary" onClick={() => void saveDraft()} disabled={saving || !draft.trim()}>
                     Save draft
                   </Button>
+                  {conversation.needsApproval && <Button size="sm" variant="danger" onClick={() => void rejectDraft()} disabled={saving}>Reject draft</Button>}
                 </div>
               </CardBody>
             </Card>
-          ) : null}
+          )}
         </div>
 
         <div className="space-y-4">
           <Card>
             <CardHeader>
-              <h2 className="font-medium">Next action</h2>
+              <h2 className="font-medium">Review & next action</h2>
             </CardHeader>
             <CardBody className="space-y-3">
+              <Select label="Assigned team member" value={assignedTo} onChange={(e) => setAssignedTo(e.target.value)} options={[{ value: "", label: "Unassigned" }, ...team.map((m) => ({ value: m.name, label: m.name }))]} />
+              <Select label="Human classification override" value={classification} onChange={(e) => setClassification(e.target.value as ReplyCategory | "")} options={[{ value: "", label: `Keep AI result (${conversation.aiCategory ? statusLabel(conversation.aiCategory) : "none"})` }, ...["payment_promise", "claims_already_paid", "requests_extension", "invoice_dispute", "needs_invoice_copy", "wrong_contact", "out_of_office", "unsubscribe", "abusive_sensitive", "unclear"].map((value) => ({ value, label: statusLabel(value) }))]} />
+              <Input label="Promised payment date override" type="date" value={promisedDate} onChange={(e) => setPromisedDate(e.target.value)} hint="The original AI interpretation stays in the audit history." />
               <Textarea
                 value={nextAction}
                 onChange={(e) => setNextAction(e.target.value)}
@@ -194,9 +218,9 @@ export default function ConversationDetailPage() {
             <CardBody className="space-y-3">
               <ul className="space-y-2 text-sm">
                 {conversation.internalNotes.map((n) => (
-                  <li key={n.id} className="rounded-lg border border-white/10 p-3">
-                    <p className="text-white/80">{n.body}</p>
-                    <p className="mt-1 text-xs text-white/40">
+                  <li key={n.id} className="rounded-lg border border-foreground/10 p-3">
+                    <p className="text-foreground/80">{n.body}</p>
+                    <p className="mt-1 text-xs text-foreground/40">
                       {n.author} · {formatRelative(n.createdAt)}
                     </p>
                   </li>
