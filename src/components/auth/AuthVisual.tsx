@@ -10,9 +10,9 @@ export function AuthVisual() {
     <div className="marketing-grid pointer-events-none absolute inset-0 -z-10 opacity-[.08]" />
     <div className="pointer-events-none absolute -right-36 top-[20%] -z-10 h-[490px] w-[490px] rounded-full border border-white/10 shadow-[0_0_0_66px_rgba(255,255,255,.025),0_0_0_140px_rgba(255,255,255,.02)]" />
 
-    <BrandMark inverse />
+    <div className="mx-auto w-full max-w-[570px]"><BrandMark inverse /></div>
 
-    <div className="relative my-auto max-w-[570px] pt-8 lg:py-5">
+    <div className="relative mx-auto my-auto w-full max-w-[570px] pt-8 lg:py-5">
       <p className="text-[11px] font-semibold uppercase tracking-[.19em] text-[#a9a9ff]">The receivables workspace</p>
       <h2 className="mt-3 max-w-lg text-[clamp(3.1rem,5.2vw,5rem)] leading-[.9] text-white">Get paid.<br /><span className="script-accent text-[1.14em]">Stay human.</span></h2>
       <p className="mt-4 max-w-md text-[13px] leading-relaxed text-white/70 xl:text-sm">Keep invoices, conversations, and collections in one calm place. Let AI handle the routine. Keep the decisions that matter with your team.</p>

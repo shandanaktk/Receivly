@@ -9,6 +9,7 @@ import { api } from "@/lib/api";
 import { PLANS } from "@/lib/constants";
 import { formatDate } from "@/lib/format";
 import type { PlatformBusiness, SubscriptionStatus } from "@/types";
+import { Eye } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
@@ -153,18 +154,21 @@ export default function AdminBusinessesPage() {
                   <td className="px-4 py-3">{b.users}</td>
                   <td className="px-4 py-3 text-foreground/60">{formatDate(b.lastActiveAt, "MMM d, yyyy")}</td>
                   <td className="px-4 py-3">
-                    <Button
-                      size="sm"
-                      variant={isSuspended ? "secondary" : "outline"}
-                      disabled={actionId === b.id}
-                      onClick={() => toggleSuspend(b.id)}
-                    >
-                      {actionId === b.id
-                        ? "…"
-                        : isSuspended
-                          ? "Reactivate"
-                          : "Suspend"}
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      <Link href={`/admin/businesses/${b.id}`} className="inline-flex h-8 items-center gap-1.5 rounded-full border border-foreground/15 px-3 text-xs font-semibold transition hover:border-[#111184]/45 hover:bg-[#111184]/10"><Eye size={14} /> View</Link>
+                      <Button
+                        size="sm"
+                        variant={isSuspended ? "secondary" : "outline"}
+                        disabled={actionId === b.id}
+                        onClick={() => toggleSuspend(b.id)}
+                      >
+                        {actionId === b.id
+                          ? "…"
+                          : isSuspended
+                            ? "Reactivate"
+                            : "Suspend"}
+                      </Button>
+                    </div>
                   </td>
                 </tr>
               );
@@ -209,15 +213,18 @@ export default function AdminBusinessesPage() {
                   <span>{formatDate(b.lastActiveAt, "MMM d, yyyy")}</span>
                 </div>
                 {isSuspended ? <Badge status="paused">Suspended (demo)</Badge> : null}
-                <Button
-                  size="sm"
-                  variant={isSuspended ? "secondary" : "outline"}
-                  className="w-full"
-                  disabled={actionId === b.id}
-                  onClick={() => toggleSuspend(b.id)}
-                >
-                  {actionId === b.id ? "Working…" : isSuspended ? "Reactivate" : "Suspend"}
-                </Button>
+                <div className="grid grid-cols-2 gap-2">
+                  <Link href={`/admin/businesses/${b.id}`} className="inline-flex h-8 items-center justify-center gap-1.5 rounded-full border border-foreground/15 px-3 text-xs font-semibold transition hover:border-[#111184]/45 hover:bg-[#111184]/10"><Eye size={14} /> View</Link>
+                  <Button
+                    size="sm"
+                    variant={isSuspended ? "secondary" : "outline"}
+                    className="w-full"
+                    disabled={actionId === b.id}
+                    onClick={() => toggleSuspend(b.id)}
+                  >
+                    {actionId === b.id ? "Working…" : isSuspended ? "Reactivate" : "Suspend"}
+                  </Button>
+                </div>
               </CardBody>
             </Card>
           );

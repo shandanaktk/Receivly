@@ -11,6 +11,7 @@ import { api } from "@/lib/api";
 import { downloadCsv } from "@/lib/csv";
 import { formatMoney, formatRelative } from "@/lib/format";
 import type { Customer } from "@/types";
+import { Eye } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -89,7 +90,7 @@ export default function CustomersPage() {
         <Card>
           <CardBody className="p-0">
             <div className="divide-y divide-foreground/10 md:hidden">
-              {visible.map((c) => <div key={c.id} className="space-y-3 p-4 text-sm"><div className="flex items-start justify-between gap-3"><div className="min-w-0"><Link href={`/app/customers/${c.id}`} className="font-semibold hover:text-fuchsia-300">{c.name}</Link><p className="break-all text-foreground/50">{c.email}</p></div><Badge status={c.status} /></div><div className="flex justify-between gap-3"><span className="text-foreground/50">Outstanding</span><strong>{formatMoney(c.outstandingBalance, c.currency)}</strong></div><div className="flex justify-between gap-3"><span className="text-foreground/50">Overdue</span><strong className="text-rose-300">{formatMoney(c.overdueBalance, c.currency)}</strong></div><p className="text-foreground/50">Last contact {formatRelative(c.lastContactDate)}</p></div>)}
+              {visible.map((c) => <div key={c.id} className="space-y-3 p-4 text-sm"><div className="flex items-start justify-between gap-3"><div className="min-w-0"><Link href={`/app/customers/${c.id}`} className="font-semibold hover:text-fuchsia-300">{c.name}</Link><p className="break-all text-foreground/50">{c.email}</p></div><Badge status={c.status} /></div><div className="flex justify-between gap-3"><span className="text-foreground/50">Outstanding</span><strong>{formatMoney(c.outstandingBalance, c.currency)}</strong></div><div className="flex justify-between gap-3"><span className="text-foreground/50">Overdue</span><strong className="text-rose-300">{formatMoney(c.overdueBalance, c.currency)}</strong></div><div className="flex items-center justify-between gap-3"><p className="text-foreground/50">Last contact {formatRelative(c.lastContactDate)}</p><Link href={`/app/customers/${c.id}`} className="inline-flex items-center gap-1.5 rounded-full border border-foreground/15 px-3 py-1.5 text-xs font-semibold transition hover:border-[#111184]/45 hover:bg-[#111184]/10"><Eye size={14} /> View</Link></div></div>)}
             </div>
             <div className="hidden overflow-x-auto md:block">
               <table className="w-full min-w-[720px] text-left text-sm">
@@ -100,6 +101,7 @@ export default function CustomersPage() {
                     <th className="px-5 py-3 font-medium text-right">Outstanding</th>
                     <th className="px-5 py-3 font-medium text-right">Overdue</th>
                     <th className="px-5 py-3 font-medium">Last contact</th>
+                    <th className="px-5 py-3 font-medium text-right">Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -119,6 +121,9 @@ export default function CustomersPage() {
                         {formatMoney(c.overdueBalance, c.currency)}
                       </td>
                       <td className="px-5 py-3 text-foreground/50">{formatRelative(c.lastContactDate)}</td>
+                      <td className="px-5 py-3 text-right">
+                        <Link href={`/app/customers/${c.id}`} className="inline-flex items-center gap-1.5 rounded-full border border-foreground/15 px-3 py-1.5 text-xs font-semibold transition hover:border-[#111184]/45 hover:bg-[#111184]/10"><Eye size={14} /> View</Link>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
