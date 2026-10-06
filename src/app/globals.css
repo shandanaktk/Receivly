@@ -334,6 +334,24 @@ html[data-theme="dark"] .onboarding-page .onboarding-step-heading { color: #fff;
 .step-number-corner { color: rgba(95,95,213,.48); }
 html[data-theme="dark"] .step-number-corner { color: #9292f2; }
 html[data-theme="dark"] .onboarding-step-dot[aria-current="step"] { border-color: #a9a9ff; background: #3535aa; }
+.invoice-sheet {
+  background: #ffffff !important;
+  color: #1c2434 !important;
+  --sheet-accent: #111184;
+}
+html[data-theme="dark"] .invoice-sheet { color: #1c2434 !important; background: #ffffff !important; }
+.invoice-sheet .invoice-faint { color: #64748b !important; }
+.invoice-sheet .invoice-ink { color: #0f172a !important; }
+.invoice-sheet .invoice-line { border-color: #e7e9f0; }
+.invoice-sheet .invoice-flash { animation: invoice-flash .7s ease; }
+@keyframes invoice-flash {
+  0% { background-color: color-mix(in srgb, var(--sheet-accent) 16%, transparent); }
+  100% { background-color: transparent; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .invoice-sheet .invoice-flash { animation: none; }
+}
+
 @media (max-width: 420px) {
   .onboarding-step-dot { width: 1.65rem; height: 1.65rem; font-size: .625rem; }
   .onboarding-stepper > div > div:first-child { top: .825rem; }

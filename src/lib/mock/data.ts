@@ -28,6 +28,7 @@ export const MOCK_WORKSPACE: Workspace = {
   currency: "USD",
   supportEmail: "billing@northwind.demo",
   logoUrl: "",
+  brandColor: "#111184",
   address: "120 Market Street, New York, NY",
   taxId: "12-3456789",
   planId: "professional",

@@ -86,6 +86,7 @@ export interface Workspace {
   currency: string;
   supportEmail: string;
   logoUrl?: string;
+  brandColor?: string;
   address?: string;
   taxId?: string;
   planId: PlanId;
