@@ -79,13 +79,11 @@ export default function NotificationsPage() {
         />
       ) : (
         <Card>
-          <CardBody className="divide-y divide-white/5 p-0">
+          <CardBody className="divide-y divide-foreground/10 p-0">
             {filtered.map((n) => (
               <div
                 key={n.id}
-                className={`flex flex-col gap-2 px-5 py-4 sm:flex-row sm:items-center sm:justify-between ${
-                  !n.read ? "bg-fuchsia-500/5" : ""
-                }`}
+                className="flex flex-col gap-2 px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
               >
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">

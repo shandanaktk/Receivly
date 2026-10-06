@@ -127,8 +127,9 @@ export default function PricingPage() {
                   className={cn(
                     "flex h-full flex-col rounded-2xl border p-6 sm:p-8",
                     plan.highlighted
-                      ? "border-[#902177]/50 bg-gradient-to-b from-[#902177]/10 to-transparent shadow-[0_0_40px_rgba(144,33,119,0.12)]"
+                      ? "border-[#111184]/50 bg-gradient-to-b from-[#111184]/14 to-transparent shadow-[0_0_40px_rgba(17,17,132,0.14)]"
                       : "border-foreground/10 bg-foreground/[0.03]",
+                    "transition-all duration-300 hover:-translate-y-1 hover:border-[#111184]/40 hover:shadow-[0_18px_50px_rgba(17,17,132,.12)]",
                   )}
                 >
                   {plan.highlighted ? (

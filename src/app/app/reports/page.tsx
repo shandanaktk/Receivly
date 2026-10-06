@@ -71,6 +71,22 @@ export default function ReportsPage() {
         </Card>
       </div>
 
+      <div className="grid gap-6 lg:grid-cols-2">
+        <Card>
+          <CardHeader><h2 className="font-medium">Aging distribution</h2><p className="mt-1 text-xs text-foreground/50">Outstanding balance by age band</p></CardHeader>
+          <CardBody className="space-y-4">
+            {report.agingBands.map((band, index) => <div key={band.label}><div className="mb-1.5 flex justify-between text-xs"><span className="text-foreground/65">{band.label}</span><span className="font-medium">{formatMoney(band.amount, currency)}</span></div><div className="h-2 overflow-hidden rounded-full bg-[#111184]/10"><div className="h-full rounded-full bg-gradient-to-r from-[#111184] to-[#6969db] transition-all duration-700" style={{ width: `${Math.max(8, Math.min(100, (band.amount / Math.max(...report.agingBands.map((item) => item.amount), 1)) * 100))}%`, opacity: 1 - index * .12 }} /></div></div>)}
+          </CardBody>
+        </Card>
+        <Card>
+          <CardHeader><h2 className="font-medium">Activity at a glance</h2><p className="mt-1 text-xs text-foreground/50">Collection signals across the period</p></CardHeader>
+          <CardBody className="flex items-center gap-8">
+            <div className="relative grid h-32 w-32 shrink-0 place-items-center rounded-full" style={{ background: "conic-gradient(#111184 0 38%, #6262d5 38% 66%, #babced 66% 100%)" }}><div className="grid h-20 w-20 place-items-center rounded-full bg-background text-center"><span className="text-2xl font-semibold text-[#111184]">{stats.paymentsRecorded}</span><span className="text-[10px] text-foreground/45">payments</span></div></div>
+            <div className="grid gap-3 text-xs sm:grid-cols-2"><p><span className="block text-foreground/45">Replies</span><strong className="text-lg">{stats.repliesReceived}</strong></p><p><span className="block text-foreground/45">Promises kept</span><strong className="text-lg">{stats.promisesKept}</strong></p><p><span className="block text-foreground/45">Disputes</span><strong className="text-lg">{stats.disputes}</strong></p><p><span className="block text-foreground/45">Reminders</span><strong className="text-lg">{stats.remindersSent}</strong></p></div>
+          </CardBody>
+        </Card>
+      </div>
+
       <Card>
         <CardHeader>
           <h2 className="font-medium">Outstanding by customer</h2>

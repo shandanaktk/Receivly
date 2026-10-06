@@ -85,7 +85,7 @@ export default function ContactPage() {
             ) : (
               <form
                 onSubmit={handleSubmit}
-                className="space-y-5 rounded-2xl border border-foreground/10 bg-foreground/[0.03] p-6 sm:p-8"
+                className="glass-panel space-y-5 rounded-2xl border border-foreground/10 bg-foreground/[0.03] p-6 transition-all duration-300 hover:border-[#111184]/30 hover:shadow-[0_18px_50px_rgba(17,17,132,.12)] sm:p-8"
                 noValidate
               >
                 <Input
@@ -156,15 +156,15 @@ export default function ContactPage() {
           </Reveal>
 
           <Reveal delay={0.08}>
-            <div className="mt-10 rounded-2xl border border-foreground/10 p-6 text-sm text-foreground/55">
+            <div className="glass-panel mt-10 rounded-2xl border border-foreground/10 p-6 text-sm text-foreground/55">
               <p className="font-medium text-foreground/80">Other ways to reach us</p>
               <p className="mt-2">
                 Email{" "}
-                <a href="mailto:hello@receivly.ai" className="text-[#c084fc] hover:underline">
+                <a href="mailto:hello@receivly.ai" className="text-[#111184] hover:underline">
                   hello@receivly.ai
                 </a>{" "}
                 for general inquiries or{" "}
-                <a href="mailto:support@receivly.ai" className="text-[#c084fc] hover:underline">
+                <a href="mailto:support@receivly.ai" className="text-[#111184] hover:underline">
                   support@receivly.ai
                 </a>{" "}
                 for existing customers.

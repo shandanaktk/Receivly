@@ -75,6 +75,17 @@ export default function AdminMonitoringPage() {
         </Card>
       </div>
 
+      <div className="grid gap-4 lg:grid-cols-[1.25fr_.75fr]">
+        <Card>
+          <CardHeader><h2 className="font-medium">Execution volume</h2><p className="mt-1 text-xs text-foreground/50">Workflow throughput by interval</p></CardHeader>
+          <CardBody><div className="flex h-36 items-end gap-2 sm:gap-3">{[35, 52, 44, 71, 62, 78, 68, 88, 76, 94, 83, 100].map((height, index) => <div key={index} className="group flex h-full flex-1 flex-col justify-end gap-2"><div className="w-full rounded-t-lg bg-gradient-to-t from-[#111184] to-[#7777e6] opacity-80 transition-all duration-300 group-hover:opacity-100" style={{ height: `${height}%` }} /><span className="text-center text-[10px] text-foreground/40">{index + 1}</span></div>)}</div></CardBody>
+        </Card>
+        <Card>
+          <CardHeader><h2 className="font-medium">System health</h2><p className="mt-1 text-xs text-foreground/50">Latest integration snapshot</p></CardHeader>
+          <CardBody className="flex items-center gap-5"><div className="relative grid h-32 w-32 shrink-0 place-items-center rounded-full" style={{ background: "conic-gradient(#111184 0 72%, #7777e6 72% 91%, #d0d0e8 91% 100%)" }}><div className="grid h-20 w-20 place-items-center rounded-full bg-background text-center"><span className="text-xl font-semibold">92%</span><span className="text-[10px] text-foreground/45">healthy</span></div></div><div className="space-y-2 text-xs"><p className="flex items-center gap-2"><i className="h-2.5 w-2.5 rounded-full bg-[#111184]" />Healthy</p><p className="flex items-center gap-2"><i className="h-2.5 w-2.5 rounded-full bg-[#7777e6]" />Degraded</p><p className="flex items-center gap-2"><i className="h-2.5 w-2.5 rounded-full bg-[#d0d0e8]" />Needs review</p></div></CardBody>
+        </Card>
+      </div>
+
       <div className="grid gap-4 xl:grid-cols-2">
         <Card>
           <CardHeader>

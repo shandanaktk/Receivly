@@ -19,7 +19,7 @@ export const Input = forwardRef<HTMLInputElement, Props>(
           ref={ref}
           id={inputId}
           className={cn(
-            "h-11 w-full rounded-xl border border-foreground/10 bg-foreground/[0.04] px-3.5 text-[13px] text-foreground placeholder:text-foreground/35 outline-none transition focus:border-[#ec2f91]/50 focus:ring-2 focus:ring-[#ec2f91]/20",
+            "h-11 w-full rounded-xl border border-foreground/10 bg-foreground/[0.04] px-3.5 text-[13px] text-foreground placeholder:text-foreground/35 outline-none transition focus:border-[#111184]/50 focus:ring-2 focus:ring-[#111184]/20",
             error && "border-rose-400/60 focus:border-rose-400 focus:ring-rose-400/20",
             className,
           )}

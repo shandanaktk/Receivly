@@ -41,9 +41,9 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 rounded-[1.7rem] border border-violet-500/20 bg-[radial-gradient(circle_at_85%_15%,rgba(135,66,210,.2),transparent_48%)] p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
+      <div className="flex flex-col gap-4 rounded-[1.7rem] border border-[#111184]/20 bg-[radial-gradient(circle_at_85%_15%,rgba(17,17,132,.16),transparent_48%)] p-6 shadow-[0_18px_60px_rgba(17,17,132,.08)] sm:flex-row sm:items-center sm:justify-between sm:p-8">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[.16em] text-violet-300">Receivables overview</p>
+          <p className="text-xs font-semibold uppercase tracking-[.16em] text-[#111184]">Receivables overview</p>
           <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">Good morning, {workspace?.companyName || "team"}.</h1>
           <p className="mt-2 text-sm text-foreground/55">Your work queue and financial position, with amounts shown in one currency at a time.</p>
         </div>
@@ -82,6 +82,24 @@ export default function DashboardPage() {
             </CardBody>
           </Card>
         ))}
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-[1.25fr_.75fr]">
+        <Card>
+          <CardHeader className="flex items-center justify-between"><div><h2 className="font-medium">Collection momentum</h2><p className="mt-1 text-xs text-foreground/50">A simple view of recent movement</p></div><span className="rounded-full bg-[#111184]/10 px-2.5 py-1 text-xs font-semibold text-[#111184]">Live view</span></CardHeader>
+          <CardBody>
+            <div className="flex h-40 items-end gap-2 sm:gap-4">
+              {[34, 46, 40, 58, 52, 70, 64, 78, 72, 91, 83, 100].map((height, index) => <div key={index} className="group flex h-full flex-1 flex-col justify-end gap-2"><div className="w-full rounded-t-lg bg-gradient-to-t from-[#111184] to-[#6a6ade] opacity-75 transition-all duration-300 group-hover:opacity-100 group-hover:shadow-[0_0_20px_rgba(17,17,132,.3)]" style={{ height: `${height}%` }} /><span className="text-center text-[10px] text-foreground/40">{index + 1}</span></div>)}
+            </div>
+          </CardBody>
+        </Card>
+        <Card>
+          <CardHeader><h2 className="font-medium">Receivables mix</h2><p className="mt-1 text-xs text-foreground/50">Where attention is concentrated</p></CardHeader>
+          <CardBody className="flex items-center gap-6">
+            <div className="relative grid h-32 w-32 shrink-0 place-items-center rounded-full" style={{ background: "conic-gradient(#111184 0 44%, #6262d5 44% 70%, #babced 70% 100%)" }}><div className="grid h-20 w-20 place-items-center rounded-full bg-background text-center"><span className="text-xl font-semibold text-[#111184]">100%</span><span className="text-[10px] text-foreground/45">tracked</span></div></div>
+            <div className="space-y-3 text-xs"><p className="flex items-center gap-2"><i className="h-2.5 w-2.5 rounded-full bg-[#111184]" />Open & current</p><p className="flex items-center gap-2"><i className="h-2.5 w-2.5 rounded-full bg-[#6262d5]" />Overdue</p><p className="flex items-center gap-2"><i className="h-2.5 w-2.5 rounded-full bg-[#babced]" />Promised / disputed</p></div>
+          </CardBody>
+        </Card>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">

@@ -132,13 +132,13 @@ export default function FeaturesPage() {
               <p className="mt-2 text-lg text-foreground/70">{section.tagline}</p>
             </Reveal>
             <Reveal delay={i * 0.03 + 0.05}>
-              <div className="rounded-2xl border border-foreground/10 bg-gradient-to-br from-foreground/[0.05] to-transparent p-6 sm:p-8">
+              <div className="glass-panel group rounded-2xl border border-foreground/10 bg-gradient-to-br from-foreground/[0.05] to-transparent p-6 transition-all duration-300 hover:-translate-y-1 hover:border-[#111184]/30 hover:shadow-[0_18px_50px_rgba(17,17,132,.12)] sm:p-8">
                 <p className="text-sm leading-relaxed text-foreground/65">{section.body}</p>
                 <ul className="mt-6 space-y-3">
                   {section.bullets.map((bullet) => (
                     <li key={bullet} className="flex gap-3 text-sm text-foreground/75">
                       <span
-                        className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#902177]"
+                        className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#111184]"
                         aria-hidden
                       />
                       {bullet}

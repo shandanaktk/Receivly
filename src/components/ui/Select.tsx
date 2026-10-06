@@ -13,7 +13,7 @@ export const Select = forwardRef<HTMLSelectElement, Props>(
       <select
         ref={ref}
         className={cn(
-          "h-11 w-full rounded-xl border border-foreground/10 bg-elevated px-3.5 text-[13px] text-foreground outline-none transition focus:border-[#ec2f91]/50 focus:ring-2 focus:ring-[#ec2f91]/20",
+          "h-11 w-full rounded-xl border border-foreground/10 bg-elevated px-3.5 text-[13px] text-foreground outline-none transition focus:border-[#111184]/50 focus:ring-2 focus:ring-[#111184]/20",
           className,
         )}
         {...props}

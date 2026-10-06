@@ -113,6 +113,22 @@ export default function AdminOverviewPage() {
         />
       </div>
 
+      <div className="grid gap-4 lg:grid-cols-[1.25fr_.75fr]">
+        <Card>
+          <CardHeader><h2 className="font-medium">Platform activity</h2><p className="mt-1 text-xs text-foreground/50">Volume across the last 30 days</p></CardHeader>
+          <CardBody>
+            <div className="flex h-40 items-end gap-2 sm:gap-3">{[42, 56, 48, 68, 61, 74, 70, 84, 78, 92, 86, 100].map((height, index) => <div key={index} className="group flex h-full flex-1 flex-col justify-end gap-2"><div className="w-full rounded-t-lg bg-gradient-to-t from-[#111184] to-[#7777e6] opacity-80 transition-all duration-300 group-hover:opacity-100 group-hover:shadow-[0_0_18px_rgba(17,17,132,.28)]" style={{ height: `${height}%` }} /><span className="text-center text-[10px] text-foreground/40">{index + 1}</span></div>)}</div>
+          </CardBody>
+        </Card>
+        <Card>
+          <CardHeader><h2 className="font-medium">Subscription mix</h2><p className="mt-1 text-xs text-foreground/50">Current platform distribution</p></CardHeader>
+          <CardBody className="flex items-center gap-5">
+            <div className="relative grid h-32 w-32 shrink-0 place-items-center rounded-full" style={{ background: "conic-gradient(#111184 0 54%, #6d6dde 54% 78%, #b8b8ed 78% 90%, #d9d9e8 90% 100%)" }}><div className="grid h-20 w-20 place-items-center rounded-full bg-background text-center"><span className="text-xl font-semibold">{subscriptionTotal}</span><span className="text-[10px] text-foreground/45">accounts</span></div></div>
+            <div className="space-y-2 text-xs"><p className="flex items-center gap-2"><i className="h-2.5 w-2.5 rounded-full bg-[#111184]" />Active {data.activeSubscriptions}</p><p className="flex items-center gap-2"><i className="h-2.5 w-2.5 rounded-full bg-[#6d6dde]" />Trial {data.trialSubscriptions}</p><p className="flex items-center gap-2"><i className="h-2.5 w-2.5 rounded-full bg-[#b8b8ed]" />Past due {data.pastDue}</p><p className="flex items-center gap-2"><i className="h-2.5 w-2.5 rounded-full bg-[#d9d9e8]" />Cancelled {data.cancelled}</p></div>
+          </CardBody>
+        </Card>
+      </div>
+
       <div className="grid gap-4 lg:grid-cols-3">
         <Card className="lg:col-span-2">
           <CardHeader>
