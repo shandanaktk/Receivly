@@ -109,9 +109,9 @@ export function RoleSwitcher() {
             key={role.href}
             href={role.href}
             aria-current={active ? "page" : undefined}
-            className={`flex min-w-0 items-center gap-3 rounded-xl border px-3 py-3 transition ${
+            className={`role-switch flex min-w-0 items-center gap-3 rounded-xl border px-3 py-3 transition ${
               active
-                ? "border-[#111184] bg-[#111184] text-white shadow-[0_10px_28px_rgba(17,17,132,.22)]"
+                ? "is-active border-[#111184] bg-[#111184] shadow-[0_10px_28px_rgba(17,17,132,.22)]"
                 : "border-foreground/10 bg-elevated text-foreground hover:border-[#111184]/30"
             }`}
           >
@@ -119,8 +119,8 @@ export function RoleSwitcher() {
               <Icon size={16} strokeWidth={1.9} aria-hidden />
             </span>
             <span className="min-w-0">
-              <span className="block truncate text-sm font-bold">{role.label}</span>
-              <span className={`block truncate text-[11px] ${active ? "text-white/75" : "text-foreground/50"}`}>{role.detail}</span>
+              <span className="role-switch-title block truncate text-sm font-bold">{role.label}</span>
+              <span className={`role-switch-detail block truncate text-[11px] ${active ? "" : "text-foreground/50"}`}>{role.detail}</span>
             </span>
           </Link>
         );

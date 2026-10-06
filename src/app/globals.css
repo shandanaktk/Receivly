@@ -382,6 +382,10 @@ html[data-theme="dark"] .role-mark.is-active {
   color: #ffffff;
   background-color: rgba(255, 255, 255, 0.2);
 }
+.role-switch.is-active .role-switch-title,
+.role-switch.is-active .role-switch-detail {
+  color: #ffffff !important;
+}
 .brand-ink { color: #111184; }
 html[data-theme="dark"] .brand-ink { color: #ececff; }
 .brand-chip {
