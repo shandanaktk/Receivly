@@ -43,7 +43,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
       <div className="flex min-h-screen">
         <aside
           className={cn(
-            "workspace-sidebar fixed inset-y-0 left-0 z-40 flex w-[244px] flex-col border-r shadow-xl transition-all md:sticky md:top-0 md:h-screen md:translate-x-0 md:shadow-none",
+            "workspace-sidebar fixed inset-y-0 left-0 z-40 flex w-[270px] flex-col border-r shadow-xl transition-all md:sticky md:top-0 md:h-screen md:translate-x-0 md:shadow-none",
             collapsed && "md:w-[76px]",
             open ? "translate-x-0" : "-translate-x-full md:translate-x-0",
           )}

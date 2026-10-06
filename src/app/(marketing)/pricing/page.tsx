@@ -125,11 +125,10 @@ export default function PricingPage() {
               <Reveal key={plan.id} delay={i * 0.05}>
                 <article
                   className={cn(
-                    "flex h-full flex-col rounded-2xl border p-6 sm:p-8",
+                    "marketing-card flex h-full flex-col rounded-2xl border p-6 transition-all duration-300 sm:p-8",
                     plan.highlighted
-                      ? "border-[#111184]/50 bg-gradient-to-b from-[#111184]/14 to-transparent shadow-[0_0_40px_rgba(17,17,132,0.14)]"
+                      ? "border-[#111184]/50 bg-[#111184]/[0.06] shadow-[0_0_40px_rgba(17,17,132,0.14)]"
                       : "border-foreground/10 bg-foreground/[0.03]",
-                    "transition-all duration-300 hover:-translate-y-1 hover:border-[#111184]/40 hover:shadow-[0_18px_50px_rgba(17,17,132,.12)]",
                   )}
                 >
                   {plan.highlighted ? (
@@ -187,7 +186,7 @@ export default function PricingPage() {
                 <caption className="sr-only">
                   Feature comparison across Starter, Professional, and Business plans
                 </caption>
-                <thead>
+                <thead className="bg-transparent">
                   <tr className="border-b border-foreground/10 bg-foreground/[0.04]">
                     <th scope="col" className="px-4 py-4 font-medium text-foreground/70 sm:px-6">
                       Feature

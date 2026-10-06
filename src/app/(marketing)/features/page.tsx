@@ -123,7 +123,7 @@ export default function FeaturesPage() {
         >
           <div className="mx-auto grid max-w-6xl gap-10 px-4 sm:px-6 lg:grid-cols-[1fr_1.1fr] lg:items-start">
             <Reveal delay={i * 0.03}>
-              <p className="font-mono text-xs uppercase tracking-widest text-[#c084fc]">
+              <p className="step-number text-5xl leading-none text-[#111184]">
                 {String(i + 1).padStart(2, "0")}
               </p>
               <h2 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
@@ -132,7 +132,7 @@ export default function FeaturesPage() {
               <p className="mt-2 text-lg text-foreground/70">{section.tagline}</p>
             </Reveal>
             <Reveal delay={i * 0.03 + 0.05}>
-              <div className="glass-panel group rounded-2xl border border-foreground/10 bg-gradient-to-br from-foreground/[0.05] to-transparent p-6 transition-all duration-300 hover:-translate-y-1 hover:border-[#111184]/30 hover:shadow-[0_18px_50px_rgba(17,17,132,.12)] sm:p-8">
+              <div className="marketing-card glass-panel group rounded-2xl border p-6 transition-all duration-300 sm:p-8">
                 <p className="text-sm leading-relaxed text-foreground/65">{section.body}</p>
                 <ul className="mt-6 space-y-3">
                   {section.bullets.map((bullet) => (

@@ -46,20 +46,21 @@ export function AppShell({ children }: { children: ReactNode }) {
   }, [loading, user, router, pathname]);
 
   if (loading || !user) return <div className="grid min-h-screen place-items-center bg-background text-foreground/70">Loading workspace…</div>;
+  if (pathname.startsWith("/app/onboarding")) return <div className="workspace-shell min-h-screen bg-background text-foreground">{children}</div>;
 
   return (
     <div className="workspace-shell min-h-screen bg-background text-foreground">
       <div className="flex min-h-screen">
-        <aside className={cn("workspace-sidebar fixed inset-y-0 left-0 z-50 flex w-[244px] flex-col border-r shadow-2xl transition-all duration-300 lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 lg:shadow-none", collapsed && "lg:w-[76px]", open ? "translate-x-0" : "-translate-x-full")}>
+        <aside className={cn("workspace-sidebar fixed inset-y-0 left-0 z-50 flex w-[270px] flex-col border-r shadow-2xl transition-all duration-300 lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 lg:shadow-none", collapsed && "lg:w-[76px]", open ? "translate-x-0" : "-translate-x-full")}>
           <div className="flex h-16 shrink-0 items-center justify-between border-b border-foreground/10 px-5">
             <div className={cn("min-w-0", collapsed && "lg:hidden")}><BrandMark href="/app/dashboard" inverse /></div>
             <button type="button" className="hidden rounded-lg p-2 text-white/70 transition hover:bg-white/10 hover:text-white lg:block" aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"} onClick={() => setCollapsed((value) => !value)}>{collapsed ? <ChevronsRight size={18} /> : <ChevronsLeft size={18} />}</button>
             <button className="rounded-lg p-2 text-foreground/70 lg:hidden" aria-label="Close navigation" onClick={() => setOpen(false)}><X size={20} /></button>
           </div>
-          <nav aria-label="Workspace navigation" className="sidebar-nav min-h-0 flex-1 space-y-3 overflow-y-auto px-3 py-4">
+          <nav aria-label="Workspace navigation" className="sidebar-nav min-h-0 flex-1 space-y-4 overflow-y-auto px-3 py-5">
             {groups.map((group) => <div key={group.label}>
               <p className={cn("px-3 text-[10px] font-semibold uppercase tracking-[.16em] text-foreground/40", collapsed && "lg:hidden")}>{group.label}</p>
-              <div className="mt-1 space-y-0.5">{group.links.map(({ href, label, icon: Icon }) => {
+              <div className="mt-2 space-y-1">{group.links.map(({ href, label, icon: Icon }) => {
                 const active = pathname === href || pathname.startsWith(`${href}/`);
                 return <Link key={href} href={href} onClick={() => setOpen(false)} aria-current={active ? "page" : undefined} title={collapsed ? label : undefined} className={cn("flex min-h-9 items-center gap-2.5 rounded-lg px-3 text-xs font-medium transition-colors", collapsed && "lg:justify-center lg:px-0", active ? "workspace-nav-active" : "text-foreground/65")}><Icon size={17} strokeWidth={1.8} aria-hidden /><span className={cn(collapsed && "lg:hidden")}>{label}</span></Link>;
               })}</div>

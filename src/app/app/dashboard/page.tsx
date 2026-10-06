@@ -41,7 +41,7 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 rounded-[1.7rem] border border-[#111184]/20 bg-[radial-gradient(circle_at_85%_15%,rgba(17,17,132,.16),transparent_48%)] p-6 shadow-[0_18px_60px_rgba(17,17,132,.08)] sm:flex-row sm:items-center sm:justify-between sm:p-8">
+      <div className="flex flex-col gap-4 rounded-[1.7rem] border border-foreground/10 bg-background p-6 shadow-[0_18px_60px_rgba(17,17,132,.06)] sm:flex-row sm:items-center sm:justify-between sm:p-8">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[.16em] text-[#111184]">Receivables overview</p>
           <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">Good morning, {workspace?.companyName || "team"}.</h1>

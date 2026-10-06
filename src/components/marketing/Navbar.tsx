@@ -31,7 +31,7 @@ export function Navbar() {
   return (
     <header className={cn("fixed inset-x-0 top-0 z-50 transition-all duration-300", overHero ? "hero-dark bg-transparent" : "border-b border-foreground/10 bg-background/90 shadow-[0_10px_30px_rgba(0,0,0,.04)] backdrop-blur-xl")}>
       <div className="mx-auto flex h-[72px] max-w-[1400px] items-center justify-between gap-4 px-4 sm:px-7 lg:px-10">
-        <BrandMark />
+        <BrandMark inverse={overHero} />
         <nav aria-label="Primary navigation" className="hidden items-center gap-9 md:flex">
           {links.map((link) => <Link key={link.href} href={link.href} aria-current={pathname === link.href ? "page" : undefined} className={cn("text-sm font-medium transition hover:text-foreground", pathname === link.href ? "text-foreground" : "text-foreground/65")}>{link.label}</Link>)}
         </nav>
