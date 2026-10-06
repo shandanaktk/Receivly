@@ -37,15 +37,15 @@ export function Navbar() {
         </nav>
         <div className="hidden items-center gap-3 md:flex">
           <ThemeToggle />
-          <Link href="/login" className="rounded-full px-3 py-2 text-sm font-medium text-foreground/75 hover:text-foreground">Log in</Link>
+          <Link href="/login" className="rounded-none px-3 py-2 text-sm font-medium text-foreground/75 hover:text-foreground">Log in</Link>
           <Link href="/signup"><Button size="sm">Get started <ArrowUpRight size={15} /></Button></Link>
         </div>
-        <button type="button" className="grid h-10 w-10 place-items-center rounded-full border border-foreground/20 text-foreground md:hidden" aria-label={open ? "Close menu" : "Open menu"} aria-expanded={open} aria-controls="mobile-nav" onClick={() => setOpen((v) => !v)}>{open ? <X size={19} /> : <Menu size={19} />}</button>
+        <button type="button" className="grid h-10 w-10 place-items-center rounded-none border border-foreground/20 text-foreground md:hidden" aria-label={open ? "Close menu" : "Open menu"} aria-expanded={open} aria-controls="mobile-nav" onClick={() => setOpen((v) => !v)}>{open ? <X size={19} /> : <Menu size={19} />}</button>
       </div>
       {open && <nav id="mobile-nav" aria-label="Mobile navigation" className="border-t border-foreground/10 bg-background p-4 shadow-2xl md:hidden">
         <div className="mx-auto flex max-w-[1400px] flex-col gap-1">
-          {links.map((link) => <Link key={link.href} href={link.href} className="rounded-xl px-4 py-3 text-base font-medium text-foreground/85 hover:bg-foreground/[0.05]" onClick={() => setOpen(false)}>{link.label}</Link>)}
-          <Link href="/login" className="rounded-xl px-4 py-3 text-base font-medium" onClick={() => setOpen(false)}>Log in</Link>
+          {links.map((link) => <Link key={link.href} href={link.href} className="rounded-none px-4 py-3 text-base font-medium text-foreground/85 hover:bg-foreground/[0.05]" onClick={() => setOpen(false)}>{link.label}</Link>)}
+          <Link href="/login" className="rounded-none px-4 py-3 text-base font-medium" onClick={() => setOpen(false)}>Log in</Link>
           <div className="mt-3 flex items-center gap-3"><ThemeToggle /><Link href="/signup" className="flex-1"><Button className="w-full">Get started <ArrowUpRight size={15} /></Button></Link></div>
         </div>
       </nav>}

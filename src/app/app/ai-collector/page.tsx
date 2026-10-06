@@ -291,7 +291,7 @@ export default function AiCollectorPage() {
                 <CurrentIcon size={22} strokeWidth={1.8} aria-hidden />
               </div>
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-[.2em] text-[#111184]/70 dark:text-[#a9a9ff]">AI Collector</p>
+                <p className="ai-collector-label text-[10px] font-bold uppercase tracking-[.2em] text-[#111184]/70">AI Collector</p>
                 <h2 className="mt-1 text-2xl font-bold tracking-[-.045em] sm:text-[1.8rem]">{currentTab.label}</h2>
                 <p className="mt-1 text-sm leading-6 text-foreground/55">{currentTab.description}</p>
               </div>

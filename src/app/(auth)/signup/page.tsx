@@ -63,7 +63,7 @@ function SignupForm() {
 
   return (
     <div className="w-full">
-      <p className="text-xs font-semibold uppercase tracking-[.18em] text-[#e53690]">Start with clarity</p>
+      <p className="auth-dark-white text-xs font-semibold uppercase tracking-[.18em] text-[#e53690]">Start with clarity</p>
       <h1 className="mt-2 text-[2.75rem] leading-none sm:text-[3.3rem]">Create your account</h1>
       <p className="mt-2 text-[13px] text-foreground/60">
         Bring your invoices together and set a better follow-up rhythm.
@@ -168,7 +168,7 @@ function SignupForm() {
 
       <p className="mt-4 text-center text-[13px] text-foreground/55">
         Already have an account?{" "}
-        <Link href="/login" className="text-[#c084fc] hover:underline">
+        <Link href="/login" className="auth-dark-white text-[#c084fc] hover:underline">
           Log in
         </Link>
       </p>
