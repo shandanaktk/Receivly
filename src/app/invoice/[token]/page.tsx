@@ -8,10 +8,10 @@ import { Modal } from "@/components/ui/Modal";
 import { PageLoader } from "@/components/ui/Spinner";
 import { api } from "@/lib/api";
 import { APP_NAME } from "@/lib/constants";
+import { DEFAULT_INVOICE_ACCENT } from "@/lib/invoiceMath";
 import { formatDate, formatMoney } from "@/lib/format";
 import type { Customer, Invoice, Workspace } from "@/types";
 import { useParams } from "next/navigation";
-import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 
 export default function PublicInvoicePage() {
@@ -67,10 +67,10 @@ export default function PublicInvoicePage() {
 
   return (
     <div className="public-invoice min-h-screen bg-background text-foreground">
-      <header className="border-b border-foreground/10 bg-background/90 backdrop-blur">
+      <header className="border-b border-foreground/10 bg-background/90 backdrop-blur" style={{ borderTop: `4px solid ${workspace.brandColor || DEFAULT_INVOICE_ACCENT}` }}>
         <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-4 sm:px-6">
           <div className="flex min-w-0 items-center gap-3">
-            {workspace.logoUrl ? <Image src={workspace.logoUrl} alt={`${workspace.companyName} logo`} width={40} height={40} unoptimized className="h-10 w-10 rounded-lg object-contain" /> : null}
+            {workspace.logoUrl ? <img src={workspace.logoUrl} alt={`${workspace.companyName} logo`} className="h-10 w-10 rounded-lg object-contain" /> : null}
             <div>
             <p className="text-xs text-foreground/45">Powered by {APP_NAME}</p>
             <p className="font-semibold">{workspace.companyName}</p>
@@ -102,7 +102,7 @@ export default function PublicInvoicePage() {
           <Card>
             <CardBody>
               <p className="text-xs uppercase tracking-wide text-foreground/45">From</p>
-              {workspace.logoUrl ? <Image src={workspace.logoUrl} alt="" width={52} height={52} unoptimized className="mt-3 h-13 w-13 rounded-xl object-contain" /> : null}
+              {workspace.logoUrl ? <img src={workspace.logoUrl} alt="" className="mt-3 h-13 w-13 rounded-xl object-contain" /> : null}
               <p className="mt-2 font-medium">{workspace.companyName}</p>
               {workspace.address ? (
                 <p className="text-sm text-foreground/50">{workspace.address}</p>

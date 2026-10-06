@@ -355,7 +355,6 @@ html[data-theme="dark"] .onboarding-page .onboarding-step-heading { color: #fff;
 .step-number-corner { color: rgba(95,95,213,.48); }
 html[data-theme="dark"] .step-number-corner { color: #9292f2; }
 html[data-theme="dark"] .onboarding-step-dot[aria-current="step"] { border-color: #a9a9ff; background: #3535aa; }
-
 /* Invoice preview stays paper-white in both themes and keeps the remote accent behavior. */
 .invoice-sheet {
   background: #ffffff !important;

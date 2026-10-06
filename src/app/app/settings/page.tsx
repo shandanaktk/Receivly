@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { PageLoader } from "@/components/ui/Spinner";
 import { api } from "@/lib/api";
+import { readLogoFile } from "@/lib/logo";
 import { formatRelative } from "@/lib/format";
 import type { TeamMember, UserRole, Workspace } from "@/types";
 import { useCallback, useEffect, useState } from "react";
@@ -34,6 +35,7 @@ export default function SettingsPage() {
   const [team, setTeam] = useState<TeamMember[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [logoError, setLogoError] = useState("");
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState<UserRole>("finance_manager");
 
@@ -129,7 +131,7 @@ export default function SettingsPage() {
               value={workspace.address || ""}
               onChange={(e) => setWorkspace({ ...workspace, address: e.target.value })}
             />
-            <div className="grid gap-4 sm:grid-cols-2"><Input label="Country" value={workspace.country} onChange={(e) => setWorkspace({ ...workspace, country: e.target.value })} /><Select label="Default currency" value={workspace.currency} onChange={(e) => setWorkspace({ ...workspace, currency: e.target.value })} options={["USD", "CAD", "GBP", "EUR"].map((value) => ({ value, label: value }))} /><Input label="Tax ID" value={workspace.taxId || ""} onChange={(e) => setWorkspace({ ...workspace, taxId: e.target.value })} /><Input label="Logo URL (optional)" type="url" value={workspace.logoUrl || ""} onChange={(e) => setWorkspace({ ...workspace, logoUrl: e.target.value })} /></div>
+            <div className="grid gap-4 sm:grid-cols-2"><Input label="Country" value={workspace.country} onChange={(e) => setWorkspace({ ...workspace, country: e.target.value })} /><Select label="Default currency" value={workspace.currency} onChange={(e) => setWorkspace({ ...workspace, currency: e.target.value })} options={["USD", "CAD", "GBP", "EUR"].map((value) => ({ value, label: value }))} /><Input label="Tax ID" value={workspace.taxId || ""} onChange={(e) => setWorkspace({ ...workspace, taxId: e.target.value })} /><div className="space-y-2 text-xs"><span className="font-medium text-foreground/80">Logo</span><div className="flex items-center gap-3"><div className="grid h-12 w-12 shrink-0 place-items-center overflow-hidden rounded-xl border border-dashed border-foreground/15 bg-foreground/[0.03]">{workspace.logoUrl ? <img src={workspace.logoUrl} alt={`${workspace.companyName} logo`} className="h-full w-full object-contain" /> : <span className="text-[10px] text-foreground/40">None</span>}</div><label className="cursor-pointer rounded-full border border-foreground/15 px-3 py-2 text-xs font-medium hover:bg-foreground/5">Upload<input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml,image/gif" className="sr-only" onChange={(event) => { const file = event.target.files?.[0]; event.target.value = ""; if (!file) return; void readLogoFile(file).then((logoUrl) => { setLogoError(""); setWorkspace({ ...workspace, logoUrl }); }).catch((err) => setLogoError(err instanceof Error ? err.message : "Could not upload that logo.")); }} /></label>{workspace.logoUrl ? <button type="button" className="text-xs text-foreground/55 hover:text-foreground" onClick={() => setWorkspace({ ...workspace, logoUrl: "" })}>Remove</button> : null}</div>{logoError ? <p role="alert" className="text-rose-300">{logoError}</p> : <p className="text-foreground/45">Shown on invoices. Save the workspace to keep it.</p>}</div></div>
             <div className="grid gap-4 sm:grid-cols-2">
               <Input
                 label="Invoice prefix"
