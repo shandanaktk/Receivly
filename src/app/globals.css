@@ -77,7 +77,7 @@ button, input, select, textarea { font: inherit; }
 button { cursor: pointer; }
 button:disabled { cursor: not-allowed; }
 
-/* Keep controls crisp and rectangular while preserving rounded cards and badges. */
+/* Keep interactive controls softly squared while preserving fully rounded badges and pills. */
 button,
 [role="button"],
 input[type="button"],
@@ -86,10 +86,12 @@ input[type="reset"],
 nav a[class*="rounded"],
 a[class*="rounded-full"][class*="px-"],
 label[class*="rounded-full"][class*="cursor-pointer"] {
-  border-radius: 0 !important;
+  border-radius: 0.5rem !important;
 }
 
 html[data-theme="dark"] .ai-collector-label { color: #fff; }
+html[data-theme="light"] .ai-collector-page [class*="text-foreground/"],
+html[data-theme="light"] .ai-collector-page .gmail-muted { color: #111111 !important; }
 /* Overrides the legacy brand-color bridge below for explicitly light-on-dark auth copy. */
 html[data-theme="dark"] .auth-dark-white { color: #fff !important; }
 
