@@ -1,48 +1,105 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
-function useDeferredVideo(source: string, mobileSource?: string) {
+type NetworkInformation = EventTarget & {
+  saveData?: boolean;
+  effectiveType?: string;
+};
+
+type DeferredVideoOptions = {
+  source: string;
+  mobileSource?: string;
+  poster?: string;
+  mobilePoster?: string;
+  eager?: boolean;
+};
+
+function useDeferredVideo({ source, mobileSource, poster, mobilePoster, eager = false }: DeferredVideoOptions) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
     const node = videoRef.current;
     if (!node) return;
-    const connection = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } }).connection;
+    const connection = (navigator as Navigator & { connection?: NetworkInformation }).connection;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || connection?.saveData || ["slow-2g", "2g"].includes(connection?.effectiveType ?? "")) return;
 
     const mobileViewport = window.matchMedia("(max-width: 767px)");
-    let isVisible = false;
+    let isVisible = eager;
+
+    const requestPlayback = () => {
+      if (!isVisible) return;
+      void node.play().catch(() => setIsPlaying(false));
+    };
+
     const syncSource = () => {
-      const nextSource = mobileSource && mobileViewport.matches ? mobileSource : source;
-      if (node.getAttribute("src") === nextSource) return;
+      // Prefer the smaller encode on constrained connections, even on a wide viewport.
+      const useMobileAsset = Boolean(mobileSource && (mobileViewport.matches || connection?.effectiveType === "3g"));
+      const nextSource = useMobileAsset && mobileSource ? mobileSource : source;
+      const nextPoster = useMobileAsset && mobilePoster ? mobilePoster : poster;
+
+      if (nextPoster && node.getAttribute("poster") !== nextPoster) node.poster = nextPoster;
+      if (node.getAttribute("src") === nextSource) {
+        requestPlayback();
+        return;
+      }
+
+      setIsPlaying(false);
+      node.pause();
       node.src = nextSource;
       node.load();
-      if (isVisible) void node.play().catch(() => {});
+      requestPlayback();
     };
+
+    const showVideo = () => setIsPlaying(true);
+    const showPoster = () => setIsPlaying(false);
+    const resumeWhenReady = () => requestPlayback();
+
+    node.addEventListener("playing", showVideo);
+    node.addEventListener("waiting", showPoster);
+    node.addEventListener("stalled", showPoster);
+    node.addEventListener("error", showPoster);
+    node.addEventListener("canplay", resumeWhenReady);
 
     const observer = new IntersectionObserver(([entry]) => {
       isVisible = entry.isIntersecting;
       if (isVisible) {
         syncSource();
-        void node.play().catch(() => {});
       } else {
         node.pause();
+        setIsPlaying(false);
       }
-    }, { rootMargin: "80px" });
+    }, { rootMargin: "200px 0px" });
+
+    if (eager) syncSource();
     observer.observe(node);
     mobileViewport.addEventListener("change", syncSource);
+    connection?.addEventListener("change", syncSource);
+
     return () => {
       observer.disconnect();
       mobileViewport.removeEventListener("change", syncSource);
+      connection?.removeEventListener("change", syncSource);
+      node.removeEventListener("playing", showVideo);
+      node.removeEventListener("waiting", showPoster);
+      node.removeEventListener("stalled", showPoster);
+      node.removeEventListener("error", showPoster);
+      node.removeEventListener("canplay", resumeWhenReady);
     };
-  }, [source, mobileSource]);
+  }, [eager, mobilePoster, mobileSource, poster, source]);
 
-  return videoRef;
+  return { videoRef, isPlaying };
 }
 
 export function HeroBackground() {
-  const videoRef = useDeferredVideo("/hero.mp4", "/hero-mobile.mp4");
+  const { videoRef, isPlaying } = useDeferredVideo({
+    source: "/hero.mp4",
+    mobileSource: "/hero-mobile.mp4",
+    poster: "/hero-poster.jpg",
+    mobilePoster: "/hero-poster-mobile.jpg",
+    eager: true,
+  });
 
   return <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
     <div className="absolute inset-0 bg-[#080612]" />
@@ -50,7 +107,16 @@ export function HeroBackground() {
       <source media="(max-width: 767px)" srcSet="/hero-poster-mobile.jpg" />
       <img src="/hero-poster.jpg" alt="" className="absolute inset-0 h-full w-full object-cover" fetchPriority="high" decoding="async" />
     </picture>
-    <video ref={videoRef} className="absolute inset-0 h-full w-full object-cover" muted loop playsInline preload="none" />
+    <video
+      ref={videoRef}
+      className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${isPlaying ? "opacity-100" : "opacity-0"}`}
+      autoPlay
+      muted
+      loop
+      playsInline
+      preload="auto"
+      poster="/hero-poster.jpg"
+    />
     <div className="absolute inset-0 bg-[#111184]/25 mix-blend-multiply" />
     <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,5,17,.48)_0%,rgba(7,5,17,.47)_40%,rgba(7,5,17,.72)_100%)]" />
     <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_15%,rgba(8,4,24,.35)_72%)]" />
@@ -58,7 +124,7 @@ export function HeroBackground() {
 }
 
 export function FlowBackground() {
-  const videoRef = useDeferredVideo("/flow.mp4");
+  const { videoRef } = useDeferredVideo({ source: "/flow.mp4", poster: "/flow-poster.jpg" });
 
   return <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
     {/* eslint-disable-next-line @next/next/no-img-element */}
