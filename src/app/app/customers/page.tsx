@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/Button";
 import { Card, CardBody } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
 import { PageLoader } from "@/components/ui/Spinner";
 import { api } from "@/lib/api";
 import { downloadCsv } from "@/lib/csv";
@@ -50,34 +51,29 @@ export default function CustomersPage() {
         </div>
         <div className="flex flex-wrap gap-2">
           <Link href="/app/invoices/import">
-            <Button variant="outline">Import CSV</Button>
+            <Button variant="outline" size="sm">Import CSV</Button>
           </Link>
-          <Button variant="outline" onClick={() => downloadCsv("receivly-customers.csv", ["name", "email", "phone", "status", "currency", "outstanding", "overdue", "last_contact"], filtered.map((c) => [c.name, c.email, c.phone, c.status, c.currency, c.outstandingBalance, c.overdueBalance, c.lastContactDate]))}>Export CSV</Button>
+          <Button variant="outline" size="sm" onClick={() => downloadCsv("receivly-customers.csv", ["name", "email", "phone", "status", "currency", "outstanding", "overdue", "last_contact"], filtered.map((c) => [c.name, c.email, c.phone, c.status, c.currency, c.outstandingBalance, c.overdueBalance, c.lastContactDate]))}>Export CSV</Button>
           <Link href="/app/customers/new">
-            <Button>Add customer</Button>
+            <Button size="sm">Add customer</Button>
           </Link>
         </div>
       </div>
 
-      <div className="flex flex-col gap-3 sm:flex-row">
+      <div className="grid items-end gap-3 sm:grid-cols-3 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,.8fr)_minmax(0,.8fr)]">
         <Input
           label="Search customers"
           placeholder="Search name, email, contact…"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="sm:max-w-xs"
         />
-        <select
-          aria-label="Customer status"
+        <Select
+          label="Status"
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value as typeof statusFilter)}
-          className="rounded-xl border border-foreground/10 bg-elevated px-3 py-2.5 text-sm text-foreground"
-        >
-          <option value="all">All statuses</option>
-          <option value="active">Active</option>
-          <option value="archived">Archived</option>
-        </select>
-        <select aria-label="Sort customers" value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="rounded-xl border border-foreground/10 bg-elevated px-3 py-2.5 text-sm text-foreground"><option value="name">Name A–Z</option><option value="outstanding">Outstanding high first</option><option value="overdue">Overdue high first</option><option value="lastContact">Last contacted</option></select>
+          options={[{ value: "all", label: "All statuses" }, { value: "active", label: "Active" }, { value: "archived", label: "Archived" }]}
+        />
+        <Select label="Sort by" value={sortBy} onChange={(e) => setSortBy(e.target.value)} options={[{ value: "name", label: "Name A–Z" }, { value: "outstanding", label: "Outstanding high first" }, { value: "overdue", label: "Overdue high first" }, { value: "lastContact", label: "Last contacted" }]} />
       </div>
 
       {loading ? (
@@ -117,11 +113,6 @@ export default function CustomersPage() {
                       </td>
                       <td className="px-5 py-3">
                         <Badge status={c.status} />
-                        {c.collectorPaused ? (
-                          <Badge status="paused" className="ml-1">
-                            Paused
-                          </Badge>
-                        ) : null}
                       </td>
                       <td className="px-5 py-3 text-right">{formatMoney(c.outstandingBalance, c.currency)}</td>
                       <td className="px-5 py-3 text-right text-rose-300">

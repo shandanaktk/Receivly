@@ -1,12 +1,11 @@
 "use client";
 
-import { DemoBanner } from "@/components/shared/DemoBanner";
 import { BrandMark } from "@/components/shared/BrandMark";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
 import { useAuth } from "@/contexts/AuthContext";
 import { api } from "@/lib/api";
 import { cn } from "@/lib/utils";
-import { Bell, Bot, ChartNoAxesCombined, ChevronDown, ClipboardCheck, CreditCard, FileText, LayoutDashboard, LogOut, Menu, MessageSquareText, Settings2, Users, X } from "lucide-react";
+import { Bell, Bot, ChartNoAxesCombined, ClipboardCheck, CreditCard, FileText, LayoutDashboard, LogOut, Menu, MessageSquareText, Settings2, Users, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { type ReactNode, useEffect, useState } from "react";
@@ -47,46 +46,36 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   if (loading || !user) return <div className="grid min-h-screen place-items-center bg-background text-foreground/70">Loading workspace…</div>;
 
-  const current = groups.flatMap((g) => g.links).find((link) => pathname.startsWith(link.href));
-
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <DemoBanner />
       <div className="flex min-h-screen">
-        <aside className={cn("fixed inset-y-0 left-0 z-50 flex w-[270px] flex-col border-r border-foreground/10 bg-elevated shadow-2xl transition-transform duration-300 lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 lg:shadow-none", open ? "translate-x-0" : "-translate-x-full")}>
-          <div className="flex h-[76px] shrink-0 items-center justify-between border-b border-foreground/10 px-5">
+        <aside className={cn("fixed inset-y-0 left-0 z-50 flex w-[244px] flex-col border-r border-foreground/10 bg-elevated shadow-2xl transition-transform duration-300 lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 lg:shadow-none", open ? "translate-x-0" : "-translate-x-full")}>
+          <div className="flex h-16 shrink-0 items-center justify-between border-b border-foreground/10 px-5">
             <BrandMark href="/app/dashboard" />
             <button className="rounded-lg p-2 text-foreground/70 lg:hidden" aria-label="Close navigation" onClick={() => setOpen(false)}><X size={20} /></button>
           </div>
-          <div className="mx-4 mt-5 rounded-2xl border border-foreground/10 bg-foreground/[0.035] p-3">
-            <div className="flex items-center gap-3">
-              <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-violet-500/20 text-sm font-bold text-violet-400">{workspaceName.slice(0, 2).toUpperCase()}</div>
-              <div className="min-w-0 flex-1"><p className="truncate text-sm font-semibold">{workspaceName}</p><p className="text-xs text-foreground/50">Business workspace</p></div>
-              <ChevronDown size={15} className="text-foreground/40" aria-hidden />
-            </div>
-          </div>
-          <nav aria-label="Workspace navigation" className="min-h-0 flex-1 space-y-6 overflow-y-auto px-3 py-6">
+          <nav aria-label="Workspace navigation" className="sidebar-nav min-h-0 flex-1 space-y-3 overflow-y-auto px-3 py-4">
             {groups.map((group) => <div key={group.label}>
-              <p className="px-3 text-[.75rem] font-semibold uppercase tracking-[.16em] text-foreground/40">{group.label}</p>
-              <div className="mt-2 space-y-1">{group.links.map(({ href, label, icon: Icon }) => {
+              <p className="px-3 text-[10px] font-semibold uppercase tracking-[.16em] text-foreground/40">{group.label}</p>
+              <div className="mt-1 space-y-0.5">{group.links.map(({ href, label, icon: Icon }) => {
                 const active = pathname === href || pathname.startsWith(`${href}/`);
-                return <Link key={href} href={href} onClick={() => setOpen(false)} aria-current={active ? "page" : undefined} className={cn("flex min-h-10 items-center gap-3 rounded-xl px-3 text-sm font-medium transition-colors", active ? "bg-violet-500/15 text-violet-300" : "text-foreground/65 hover:bg-foreground/[0.06] hover:text-foreground")}><Icon size={18} strokeWidth={1.8} aria-hidden />{label}</Link>;
+                return <Link key={href} href={href} onClick={() => setOpen(false)} aria-current={active ? "page" : undefined} className={cn("flex min-h-8 items-center gap-2.5 rounded-lg px-3 text-xs font-medium transition-colors", active ? "bg-[#ec2f91]/10 text-[#ec2f91]" : "text-foreground/65 hover:bg-foreground/[0.06] hover:text-foreground")}><Icon size={16} strokeWidth={1.8} aria-hidden />{label}</Link>;
               })}</div>
             </div>)}
           </nav>
-          <div className="border-t border-foreground/10 p-4">
-            <Link href="/app/profile" className="flex items-center gap-3 rounded-xl p-2 transition hover:bg-foreground/[0.05]">
-              <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-gradient-to-br from-fuchsia-500 to-blue-600 text-sm font-bold text-white">{user.name.slice(0, 1).toUpperCase()}</div>
-              <div className="min-w-0"><p className="truncate text-sm font-semibold">{user.name}</p><p className="truncate text-xs text-foreground/50">{user.email}</p></div>
+          <div className="border-t border-foreground/10 p-3">
+            <Link href="/app/profile" className="flex items-center gap-2.5 rounded-lg p-2 transition hover:bg-foreground/[0.05]">
+              <div className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#ec2f91]/15 text-xs font-semibold text-[#ec2f91]">{user.name.slice(0, 1).toUpperCase()}</div>
+              <div className="min-w-0"><p className="truncate text-xs font-semibold">{user.name}</p><p className="truncate text-[11px] text-foreground/50">{user.email}</p></div>
             </Link>
           </div>
         </aside>
         {open && <button className="fixed inset-0 z-40 bg-slate-950/65 backdrop-blur-sm lg:hidden" aria-label="Close navigation overlay" onClick={() => setOpen(false)} />}
         <div className="flex min-w-0 flex-1 flex-col">
-          <header className="sticky top-0 z-30 flex h-[76px] items-center justify-between gap-3 border-b border-foreground/10 bg-background/90 px-4 backdrop-blur-xl sm:px-6 lg:px-8">
+          <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-3 border-b border-foreground/10 bg-background/90 px-4 backdrop-blur-xl sm:px-6 lg:px-8">
             <div className="flex min-w-0 items-center gap-3">
               <button className="rounded-xl border border-foreground/10 p-2.5 lg:hidden" aria-label="Open navigation" aria-expanded={open} onClick={() => setOpen(true)}><Menu size={19} /></button>
-              <div className="min-w-0"><p className="text-xs font-medium uppercase tracking-[.16em] text-foreground/45">Workspace / {current?.label ?? "Onboarding"}</p><p className="truncate text-sm font-semibold sm:text-base">{current?.label ?? "Getting started"}</p></div>
+              <p className="truncate text-xs font-medium text-foreground/55">{workspaceName}</p>
             </div>
             <div className="flex items-center gap-2 sm:gap-3">
               <ThemeToggle />

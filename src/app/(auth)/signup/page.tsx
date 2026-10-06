@@ -39,10 +39,11 @@ function SignupForm() {
   }
 
   return (
-    <div className="rounded-2xl border border-foreground/10 bg-foreground/[0.03] p-6 sm:p-8">
-      <h1 className="text-2xl font-semibold tracking-tight">Create your account</h1>
-      <p className="mt-2 text-sm text-foreground/55">
-        Start collecting invoices with AI-assisted follow-up.
+    <div className="w-full">
+      <p className="text-xs font-semibold uppercase tracking-[.18em] text-[#e53690]">Start with clarity</p>
+      <h1 className="mt-2 text-[2.75rem] leading-none sm:text-[3.3rem]">Create your account</h1>
+      <p className="mt-2 text-[13px] text-foreground/60">
+        Bring your invoices together and set a better follow-up rhythm.
       </p>
 
       {selectedPlan ? (
@@ -52,7 +53,7 @@ function SignupForm() {
         </p>
       ) : null}
 
-      <form onSubmit={handleSubmit} className="mt-6 space-y-4" noValidate>
+      <form onSubmit={handleSubmit} className="mt-6 space-y-3" noValidate>
         <Input
           label="Full name"
           name="name"
@@ -101,12 +102,12 @@ function SignupForm() {
           .
         </p>
 
-        <Button type="submit" className="w-full" disabled={loading}>
+        <Button type="submit" size="lg" className="mt-2 w-full" disabled={loading}>
           {loading ? "Creating account…" : "Create account"}
         </Button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-foreground/50">
+      <p className="mt-4 text-center text-[13px] text-foreground/55">
         Already have an account?{" "}
         <Link href="/login" className="text-[#c084fc] hover:underline">
           Log in

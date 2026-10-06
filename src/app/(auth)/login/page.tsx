@@ -59,13 +59,14 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="rounded-2xl border border-foreground/10 bg-foreground/[0.03] p-6 sm:p-8">
-      <h1 className="text-2xl font-semibold tracking-tight">Log in</h1>
-      <p className="mt-2 text-sm text-foreground/55">
-        Access your workspace or platform admin console.
+    <div className="w-full">
+      <p className="text-xs font-semibold uppercase tracking-[.18em] text-[#e53690]">Welcome back</p>
+      <h1 className="mt-2 text-[2.75rem] leading-none sm:text-[3.3rem]">Sign in to Receivly</h1>
+      <p className="mt-2 text-[13px] text-foreground/60">
+        Your invoices, conversations, and next actions are ready.
       </p>
 
-      <form onSubmit={handleSubmit} className="mt-6 space-y-4" noValidate>
+      <form onSubmit={handleSubmit} className="mt-6 space-y-3" noValidate>
         <Input
           label="Email"
           name="email"
@@ -100,44 +101,38 @@ export default function LoginPage() {
           </p>
         ) : null}
 
-        <Button type="submit" className="w-full" disabled={loading}>
+        <Button type="submit" size="lg" className="mt-2 w-full" disabled={loading}>
           {loading ? "Signing in…" : "Log in"}
         </Button>
       </form>
 
       <aside
-        className="mt-6 rounded-xl border border-[#902177]/30 bg-[#902177]/10 p-4"
+        className="mt-5 rounded-2xl border border-foreground/10 bg-foreground/[0.025] p-3.5"
         aria-label="Demo credentials"
       >
-        <p className="text-sm font-medium text-foreground/90">Demo credentials</p>
-        <p className="mt-1 text-xs text-foreground/50">
-          Milestone 1 uses frontend-only auth. Click to fill the form.
-        </p>
-        <div className="mt-3 space-y-2">
+        <p className="text-xs font-semibold uppercase tracking-[.12em] text-foreground/70">Explore the demo</p>
+        <p className="mt-1 text-xs text-foreground/50">Choose a demo role to fill the form.</p>
+        <div className="mt-2 grid gap-2 sm:grid-cols-2">
           <button
             type="button"
             onClick={() => fillDemo("business")}
-            className="w-full rounded-xl border border-foreground/10 bg-foreground/[0.04] px-3 py-2.5 text-left text-sm transition hover:bg-foreground/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c084fc]"
+            className="w-full min-w-0 rounded-xl border border-foreground/10 bg-elevated px-3 py-2 text-left text-xs transition hover:border-[#ec2f91]/40 hover:bg-foreground/[0.04] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ec2f91]"
           >
             <span className="font-medium text-foreground/85">{DEMO_CREDENTIALS.business.label}</span>
-            <span className="mt-0.5 block font-mono text-xs text-foreground/50">
-              {DEMO_CREDENTIALS.business.email} / {DEMO_CREDENTIALS.business.password}
-            </span>
+            <span className="mt-0.5 block break-all text-[11px] text-foreground/50">{DEMO_CREDENTIALS.business.email}</span>
           </button>
           <button
             type="button"
             onClick={() => fillDemo("admin")}
-            className="w-full rounded-xl border border-foreground/10 bg-foreground/[0.04] px-3 py-2.5 text-left text-sm transition hover:bg-foreground/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c084fc]"
+            className="w-full min-w-0 rounded-xl border border-foreground/10 bg-elevated px-3 py-2 text-left text-xs transition hover:border-[#ec2f91]/40 hover:bg-foreground/[0.04] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ec2f91]"
           >
             <span className="font-medium text-foreground/85">{DEMO_CREDENTIALS.admin.label}</span>
-            <span className="mt-0.5 block font-mono text-xs text-foreground/50">
-              {DEMO_CREDENTIALS.admin.email} / {DEMO_CREDENTIALS.admin.password}
-            </span>
+            <span className="mt-0.5 block break-all text-[11px] text-foreground/50">{DEMO_CREDENTIALS.admin.email}</span>
           </button>
         </div>
       </aside>
 
-      <p className="mt-6 text-center text-sm text-foreground/50">
+      <p className="mt-4 text-center text-[13px] text-foreground/55">
         Don&apos;t have an account?{" "}
         <Link href="/signup" className="text-[#c084fc] hover:underline">
           Sign up

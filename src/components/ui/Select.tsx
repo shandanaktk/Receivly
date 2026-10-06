@@ -8,12 +8,12 @@ interface Props extends SelectHTMLAttributes<HTMLSelectElement> {
 
 export const Select = forwardRef<HTMLSelectElement, Props>(
   ({ className, label, options, ...props }, ref) => (
-    <label className="block space-y-1.5 text-sm">
+    <label className="block space-y-1.5 text-xs">
       {label ? <span className="font-medium text-foreground/80">{label}</span> : null}
       <select
         ref={ref}
         className={cn(
-          "w-full rounded-xl border border-foreground/10 bg-elevated px-3.5 py-2.5 text-foreground outline-none transition focus:border-[#a855f7]/50 focus:ring-2 focus:ring-[#a855f7]/20",
+          "h-11 w-full rounded-xl border border-foreground/10 bg-elevated px-3.5 text-[13px] text-foreground outline-none transition focus:border-[#ec2f91]/50 focus:ring-2 focus:ring-[#ec2f91]/20",
           className,
         )}
         {...props}

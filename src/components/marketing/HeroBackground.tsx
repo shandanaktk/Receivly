@@ -1,83 +1,51 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
-/**
- * Mobile-first media strategy:
- * - Always show a lightweight poster + CSS atmosphere (instant paint)
- * - Load video only on desktop, when in view, and when the user allows motion
- * - Respect prefers-reduced-motion and Save-Data
- */
-export function HeroBackground() {
+function useDeferredVideo(source: string, mobileSource?: string) {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [shouldPlayVideo, setShouldPlayVideo] = useState(false);
 
   useEffect(() => {
-    const mqDesktop = window.matchMedia("(min-width: 768px)");
-    const mqMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const connection = (navigator as Navigator & {
-      connection?: { saveData?: boolean; effectiveType?: string };
-    }).connection;
-    const saveData = Boolean(connection?.saveData);
-    const slowNet = ["slow-2g", "2g"].includes(connection?.effectiveType || "");
-
-    const eligible =
-      mqDesktop.matches && !mqMotion.matches && !saveData && !slowNet;
-
-    if (!eligible) {
-      return;
-    }
-
     const node = videoRef.current;
     if (!node) return;
+    const connection = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } }).connection;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || connection?.saveData || ["slow-2g", "2g"].includes(connection?.effectiveType ?? "")) return;
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setShouldPlayVideo(true);
-          void node.play().catch(() => setShouldPlayVideo(false));
-        } else {
-          node.pause();
-        }
-      },
-      { rootMargin: "80px" },
-    );
-
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        if (!node.getAttribute("src")) node.src = mobileSource && window.matchMedia("(max-width: 767px)").matches ? mobileSource : source;
+        void node.play().catch(() => {});
+      } else {
+        node.pause();
+      }
+    }, { rootMargin: "80px" });
     observer.observe(node);
     return () => observer.disconnect();
-  }, []);
+  }, [source, mobileSource]);
 
-  return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
-      {/* Instant CSS atmosphere — works on all devices */}
-      <div className="absolute inset-0 bg-[#05050f]" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_20%_10%,rgba(144,33,119,0.45),transparent_45%),radial-gradient(ellipse_at_80%_20%,rgba(23,43,118,0.55),transparent_50%),radial-gradient(ellipse_at_50%_90%,rgba(91,45,142,0.35),transparent_55%)]" />
-      <div className="absolute -left-24 top-24 h-72 w-72 rounded-full bg-[#902177]/25 blur-3xl" />
-      <div className="absolute -right-16 top-40 h-80 w-80 rounded-full bg-[#172B76]/40 blur-3xl" />
+  return videoRef;
+}
 
-      {/* Poster always available for LCP */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="/hero-poster.jpg"
-        alt=""
-        className="absolute inset-0 h-full w-full object-cover opacity-40 mix-blend-screen"
-        fetchPriority="high"
-        decoding="async"
-      />
+export function HeroBackground() {
+  const videoRef = useDeferredVideo("/hero.mp4", "/hero-mobile.mp4");
 
-      {/* Desktop-only deferred video */}
-      <video
-        ref={videoRef}
-        className="absolute inset-0 hidden h-full w-full object-cover opacity-50 mix-blend-screen md:block"
-        muted
-        loop
-        playsInline
-        preload="none"
-        poster="/hero-poster.jpg"
-        src={shouldPlayVideo ? "/hero.mp4" : undefined}
-      />
+  return <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+    <div className="absolute inset-0 bg-[#080612]" />
+    {/* eslint-disable-next-line @next/next/no-img-element */}
+    <img src="/hero-poster.jpg" alt="" className="absolute inset-0 h-full w-full object-cover" fetchPriority="high" decoding="async" />
+    <video ref={videoRef} className="absolute inset-0 h-full w-full object-cover" muted loop playsInline preload="none" poster="/hero-poster.jpg" />
+    <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,5,17,.48)_0%,rgba(7,5,17,.47)_40%,rgba(7,5,17,.72)_100%)]" />
+    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_15%,rgba(8,4,24,.35)_72%)]" />
+  </div>;
+}
 
-      <div className="absolute inset-0 bg-gradient-to-b from-[#05050f]/20 via-[#05050f]/55 to-[#05050f]" />
-    </div>
-  );
+export function FlowBackground() {
+  const videoRef = useDeferredVideo("/flow.mp4");
+
+  return <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+    {/* eslint-disable-next-line @next/next/no-img-element */}
+    <img src="/flow-poster.jpg" alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover opacity-[.20]" />
+    <video ref={videoRef} className="absolute inset-0 h-full w-full object-cover opacity-[.27]" muted loop playsInline preload="none" poster="/flow-poster.jpg" />
+    <div className="absolute inset-0 bg-gradient-to-b from-background/90 via-background/70 to-background/95" />
+  </div>;
 }

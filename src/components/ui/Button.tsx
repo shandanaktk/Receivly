@@ -11,7 +11,7 @@ interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variants: Record<Variant, string> = {
   primary:
-    "bg-[linear-gradient(135deg,#a6348a,#6f3ac0_45%,#354cbb)] text-white shadow-[0_8px_30px_rgba(112,52,179,0.24)] hover:brightness-110",
+    "bg-[linear-gradient(115deg,#ff3d9a,#ec2f91_54%,#c92483)] text-white shadow-[0_8px_26px_rgba(225,47,136,0.22)] hover:brightness-110",
   secondary: "bg-foreground/10 text-foreground hover:bg-foreground/15 border border-foreground/10",
   ghost: "bg-transparent text-foreground/80 hover:bg-foreground/5 hover:text-foreground",
   danger: "bg-rose-600 text-white hover:bg-rose-500",
@@ -19,9 +19,9 @@ const variants: Record<Variant, string> = {
 };
 
 const sizes: Record<Size, string> = {
-  sm: "h-9 px-3 text-sm",
-  md: "h-11 px-4 text-sm",
-  lg: "h-12 px-6 text-base",
+  sm: "h-8 px-3 text-xs",
+  md: "h-10 px-4 text-[13px]",
+  lg: "h-11 px-6 text-sm",
 };
 
 export const Button = forwardRef<HTMLButtonElement, Props>(

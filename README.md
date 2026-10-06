@@ -21,7 +21,7 @@ Open `http://localhost:3000`. No environment variables are needed for the demo.
 - Public: home, features, pricing, contact, legal pages, sign in/up and recovery, public invoice and browser print/PDF.
 - Workspace: onboarding, dashboard/work queue, customers, invoices, CSV import, invoice activity, conversations, approvals, AI Collector, reports, notifications, billing, profile, and team/workspace settings.
 - Owner: overview, businesses and business detail, monitoring, plans/content, and audit log.
-- Desktop and mobile layouts, light/dark mode, keyboard focus styles, reduced motion support. The landing video is deferred and disabled on small screens, slow connections, Save-Data, and reduced motion.
+- Desktop and mobile layouts, light/dark mode, keyboard focus styles, reduced motion support. The small landing video loads when the hero enters view and stays off on slow connections, Save-Data, and reduced motion.
 - CSV files are parsed and validated in the browser. The sample records and all simulated actions stay in the mock API. Changes survive client-side navigation but reset on a full reload or server restart.
 - Money summaries filter by currency. They never add balances from different currencies together.
 

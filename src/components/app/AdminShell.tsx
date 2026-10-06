@@ -1,6 +1,5 @@
 "use client";
 
-import { DemoBanner } from "@/components/shared/DemoBanner";
 import { BrandMark } from "@/components/shared/BrandMark";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
 import { Button } from "@/components/ui/Button";
@@ -41,30 +40,29 @@ export function AdminShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <DemoBanner />
       <div className="flex min-h-screen">
         <aside
           className={cn(
-            "fixed inset-y-0 left-0 z-40 w-64 border-r border-foreground/10 bg-elevated shadow-xl transition md:sticky md:top-0 md:h-screen md:translate-x-0 md:shadow-none",
+            "fixed inset-y-0 left-0 z-40 w-[244px] border-r border-foreground/10 bg-elevated shadow-xl transition md:sticky md:top-0 md:h-screen md:translate-x-0 md:shadow-none",
             open ? "translate-x-0" : "-translate-x-full md:translate-x-0",
           )}
         >
           <div className="flex h-16 items-center border-b border-foreground/10 px-5"><BrandMark href="/admin" /></div>
-          <p className="px-5 pb-3 pt-5 text-xs font-semibold uppercase tracking-[.16em] text-foreground/45">Platform owner</p>
-          <nav className="space-y-1 px-3" aria-label="Platform navigation">
+          <p className="px-5 pb-2 pt-4 text-[10px] font-semibold uppercase tracking-[.16em] text-foreground/45">Platform owner</p>
+          <nav className="space-y-0.5 px-3" aria-label="Platform navigation">
             {nav.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
                 onClick={() => setOpen(false)}
                 className={cn(
-                  "flex min-h-10 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition",
+                  "flex min-h-8 items-center gap-2.5 rounded-lg px-3 text-xs font-medium transition",
                   pathname === item.href
-                    ? "bg-violet-500/15 text-violet-300"
+                    ? "bg-[#ec2f91]/10 text-[#ec2f91]"
                     : "text-foreground/60 hover:bg-foreground/5 hover:text-foreground",
                 )}
               >
-                <item.icon size={18} strokeWidth={1.8} aria-hidden />{item.label}
+                <item.icon size={16} strokeWidth={1.8} aria-hidden />{item.label}
               </Link>
             ))}
           </nav>

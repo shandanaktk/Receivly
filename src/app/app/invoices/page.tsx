@@ -136,7 +136,7 @@ export default function InvoicesPage() {
         </div>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid items-end gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <Input
           label="Search"
           placeholder="Search number, customer, PO…"
@@ -152,12 +152,12 @@ export default function InvoicesPage() {
             ...INVOICE_STATUSES.map((s) => ({ value: s, label: s.replace(/_/g, " ") })),
           ]}
         />
-        <Button className="sm:col-span-2 lg:hidden" variant="outline" size="sm" onClick={() => setShowAdvancedFilters((open) => !open)} aria-expanded={showAdvancedFilters}>
-          {showAdvancedFilters ? "Hide filters" : "More filters"}{currency !== "all" || collector !== "all" || dueFrom || dueTo || promisedFrom || promisedTo || assignedTo !== "all" || minAmount || maxAmount ? " · active" : ""}
-        </Button>
-        <div className={`${showAdvancedFilters ? "grid" : "hidden"} col-span-full gap-3 sm:grid-cols-2 lg:grid lg:grid-cols-4`}>
         <Select label="Currency" value={currency} onChange={(e) => { setCurrency(e.target.value); setPage(1); }} options={[{ value: "all", label: "All currencies" }, ...[...new Set(invoices.map((i) => i.currency))].map((c) => ({ value: c, label: c }))]} />
         <Select label="Collector" value={collector} onChange={(e) => { setCollector(e.target.value); setPage(1); }} options={[{ value: "all", label: "Any state" }, { value: "active", label: "Active" }, { value: "paused", label: "Paused" }]} />
+        <div className="col-span-full"><Button className="w-full sm:w-auto" variant="outline" size="sm" onClick={() => setShowAdvancedFilters((open) => !open)} aria-expanded={showAdvancedFilters}>
+          {showAdvancedFilters ? "Hide advanced filters" : "More filters"}{dueFrom || dueTo || promisedFrom || promisedTo || assignedTo !== "all" || minAmount || maxAmount ? " · active" : ""}
+        </Button></div>
+        <div className={`${showAdvancedFilters ? "grid" : "hidden"} col-span-full items-end gap-3 sm:grid-cols-2 xl:grid-cols-4`}>
         <Input label="Due from" type="date" value={dueFrom} onChange={(e) => setDueFrom(e.target.value)} />
         <Input label="Due to" type="date" value={dueTo} onChange={(e) => setDueTo(e.target.value)} />
         <Input label="Promised from" type="date" value={promisedFrom} onChange={(e) => setPromisedFrom(e.target.value)} />

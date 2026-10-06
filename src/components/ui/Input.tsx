@@ -11,7 +11,7 @@ export const Input = forwardRef<HTMLInputElement, Props>(
   ({ className, label, error, hint, id, ...props }, ref) => {
     const inputId = id || props.name;
     return (
-      <label className="block space-y-1.5 text-sm">
+      <label className="block space-y-1.5 text-xs">
         {label ? (
           <span className="font-medium text-foreground/80">{label}</span>
         ) : null}
@@ -19,7 +19,7 @@ export const Input = forwardRef<HTMLInputElement, Props>(
           ref={ref}
           id={inputId}
           className={cn(
-            "w-full rounded-xl border border-foreground/10 bg-foreground/[0.04] px-3.5 py-2.5 text-foreground placeholder:text-foreground/35 outline-none transition focus:border-[#a855f7]/50 focus:ring-2 focus:ring-[#a855f7]/20",
+            "h-11 w-full rounded-xl border border-foreground/10 bg-foreground/[0.04] px-3.5 text-[13px] text-foreground placeholder:text-foreground/35 outline-none transition focus:border-[#ec2f91]/50 focus:ring-2 focus:ring-[#ec2f91]/20",
             error && "border-rose-400/60 focus:border-rose-400 focus:ring-rose-400/20",
             className,
           )}

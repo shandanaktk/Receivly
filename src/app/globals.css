@@ -2,6 +2,9 @@
 
 @font-face { font-family: "DM Sans"; src: url("/fonts/dm-sans-latin.woff2") format("woff2"); font-style: normal; font-weight: 100 1000; font-display: swap; }
 @font-face { font-family: "JetBrains Mono"; src: url("/fonts/jetbrains-mono-latin.woff2") format("woff2"); font-style: normal; font-weight: 100 800; font-display: swap; }
+@font-face { font-family: "Manrope"; src: url("/fonts/manrope-latin.woff") format("woff"); font-style: normal; font-weight: 200 800; font-display: swap; }
+@font-face { font-family: "Cormorant Garamond"; src: url("/fonts/cormorant-garamond-latin.woff") format("woff"); font-style: normal; font-weight: 300 700; font-display: swap; }
+@font-face { font-family: "Pinyon Script"; src: url("/fonts/pinyon-script-latin.woff") format("woff"); font-style: normal; font-weight: 400; font-display: swap; }
 
 :root {
   --app-font-sans: "DM Sans", "Segoe UI", Arial, sans-serif;
@@ -72,8 +75,10 @@ button, input, select, textarea { font: inherit; }
 button { cursor: pointer; }
 button:disabled { cursor: not-allowed; }
 
-/* Keep supporting copy readable on small screens, including table metadata. */
-.text-xs { font-size: 0.8125rem; line-height: 1.35rem; }
+/* Compact supporting copy; main content remains at 13px or above. */
+.text-xs { font-size: 0.75rem; line-height: 1.125rem; }
+.sidebar-nav { scrollbar-width: none; }
+.sidebar-nav::-webkit-scrollbar { display: none; }
 
 :focus-visible { outline: 2px solid #a26df2; outline-offset: 3px; }
 
@@ -117,6 +122,27 @@ html[data-theme="light"] .hero-dark .text-emerald-300 { color: #7ae5b9 !importan
 
 .section-kicker { color: #b599f8; letter-spacing: .18em; text-transform: uppercase; font-size: .82rem; font-weight: 700; }
 html[data-theme="light"] .section-kicker { color: #6c45b0; }
+
+.marketing-site, .auth-experience { font-family: "Manrope", "Segoe UI", Arial, sans-serif; }
+.landing-page h1, .landing-page h2, .auth-experience h1, .auth-experience h2 {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-weight: 500;
+  letter-spacing: -.035em;
+}
+.script-accent { font-family: "Pinyon Script", cursive; font-weight: 400; letter-spacing: 0; color: #f2a0ca; }
+html[data-theme="light"] .landing-page .script-accent { color: #b53176; }
+html[data-theme="light"] .landing-page .hero-dark .script-accent { color: #f2a0ca; }
+.story-card h3 { font-family: "Cormorant Garamond", Georgia, serif; font-weight: 500; }
+.landing-page .section-kicker { font-size: .7rem; letter-spacing: .23em; }
+.landing-marquee { overflow: hidden; border-block: 1px solid rgba(255,255,255,.16); background: #d72b83; color: #fff; }
+.landing-marquee-track { display: flex; width: max-content; animation: marquee-travel 26s linear infinite; }
+.landing-marquee-group { display: flex; flex: none; align-items: center; gap: 2.3rem; padding: .92rem 1.15rem; white-space: nowrap; font-size: .73rem; font-weight: 700; letter-spacing: .17em; text-transform: uppercase; }
+.landing-marquee-group span:nth-child(even) { font-family: "Cormorant Garamond", Georgia, serif; font-size: 1.65rem; font-style: italic; font-weight: 500; letter-spacing: -.02em; text-transform: none; }
+@keyframes marquee-travel { to { transform: translateX(-50%); } }
+.story-scroll { scrollbar-width: none; scroll-snap-type: x mandatory; }
+.story-scroll::-webkit-scrollbar { display: none; }
+.story-card { scroll-snap-align: start; }
+@media (prefers-reduced-motion: reduce) { .landing-marquee-track { animation: none; } }
 
 @keyframes float-card { 50% { transform: translateY(-12px); } }
 .float-card { animation: float-card 8s ease-in-out infinite; }
