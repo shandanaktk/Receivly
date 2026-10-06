@@ -61,7 +61,7 @@ export default function NotificationsPage() {
             key={f}
             type="button"
             onClick={() => setFilter(f)}
-            className={`rounded-full px-3 py-1.5 text-sm capitalize ${
+            className={`filter-pill rounded-full px-3 py-1.5 text-sm capitalize ${
               filter === f ? "bg-foreground/10 text-foreground" : "text-foreground/50 hover:text-foreground"
             }`}
           >

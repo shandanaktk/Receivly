@@ -60,7 +60,7 @@ export default function LoginPage() {
 
   return (
     <div className="w-full">
-      <p className="text-xs font-semibold uppercase tracking-[.18em] text-[#e53690]">Welcome back</p>
+      <p className="auth-dark-white text-xs font-semibold uppercase tracking-[.18em] text-[#e53690]">Welcome back</p>
       <h1 className="mt-2 text-[2.75rem] leading-none sm:text-[3.3rem]">Sign in to Receivly</h1>
       <p className="mt-2 text-[13px] text-foreground/60">
         Your invoices, conversations, and next actions are ready.
@@ -134,7 +134,7 @@ export default function LoginPage() {
 
       <p className="mt-4 text-center text-[13px] text-foreground/55">
         Don&apos;t have an account?{" "}
-        <Link href="/signup" className="text-[#c084fc] hover:underline">
+        <Link href="/signup" className="auth-dark-white text-[#c084fc] hover:underline">
           Sign up
         </Link>
       </p>

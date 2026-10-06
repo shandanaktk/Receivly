@@ -46,9 +46,11 @@ export function HeroBackground() {
 
   return <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
     <div className="absolute inset-0 bg-[#080612]" />
-    {/* eslint-disable-next-line @next/next/no-img-element */}
-    <img src="/hero-poster.jpg" alt="" className="absolute inset-0 h-full w-full object-cover" fetchPriority="high" decoding="async" />
-    <video ref={videoRef} className="absolute inset-0 h-full w-full object-cover" muted loop playsInline preload="none" poster="/hero-poster.jpg" />
+    <picture>
+      <source media="(max-width: 767px)" srcSet="/hero-poster-mobile.jpg" />
+      <img src="/hero-poster.jpg" alt="" className="absolute inset-0 h-full w-full object-cover" fetchPriority="high" decoding="async" />
+    </picture>
+    <video ref={videoRef} className="absolute inset-0 h-full w-full object-cover" muted loop playsInline preload="none" />
     <div className="absolute inset-0 bg-[#111184]/25 mix-blend-multiply" />
     <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,5,17,.48)_0%,rgba(7,5,17,.47)_40%,rgba(7,5,17,.72)_100%)]" />
     <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_15%,rgba(8,4,24,.35)_72%)]" />

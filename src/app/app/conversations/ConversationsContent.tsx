@@ -60,7 +60,7 @@ export function ConversationsContent() {
             key={f.value}
             type="button"
             onClick={() => setFilter(f.value)}
-            className={`shrink-0 rounded-full px-3 py-1.5 text-sm transition ${
+            className={`filter-pill shrink-0 rounded-full px-3 py-1.5 text-sm transition ${
               filter === f.value
                 ? "bg-gradient-to-r from-fuchsia-500/30 to-blue-600/30 text-foreground"
                 : "bg-foreground/5 text-foreground/60 hover:bg-foreground/10"

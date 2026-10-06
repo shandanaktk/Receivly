@@ -77,6 +77,27 @@ button, input, select, textarea { font: inherit; }
 button { cursor: pointer; }
 button:disabled { cursor: not-allowed; }
 
+/* Keep controls crisp and rectangular while preserving rounded cards and badges. */
+button,
+[role="button"],
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+nav a[class*="rounded"],
+a[class*="rounded-full"][class*="px-"],
+label[class*="rounded-full"][class*="cursor-pointer"] {
+  border-radius: 0 !important;
+}
+
+html[data-theme="dark"] .ai-collector-label { color: #fff; }
+/* Overrides the legacy brand-color bridge below for explicitly light-on-dark auth copy. */
+html[data-theme="dark"] .auth-dark-white { color: #fff !important; }
+
+.filter-pill,
+.theme-toggle {
+  border-radius: 9999px !important;
+}
+
 /* Compact supporting copy; main content remains at 13px or above. */
 .text-xs { font-size: 0.75rem; line-height: 1.125rem; }
 .sidebar-nav { scrollbar-width: none; }
@@ -334,6 +355,7 @@ html[data-theme="dark"] .onboarding-page .onboarding-step-heading { color: #fff;
 .step-number-corner { color: rgba(95,95,213,.48); }
 html[data-theme="dark"] .step-number-corner { color: #9292f2; }
 html[data-theme="dark"] .onboarding-step-dot[aria-current="step"] { border-color: #a9a9ff; background: #3535aa; }
+/* Invoice preview stays paper-white in both themes and keeps the remote accent behavior. */
 .invoice-sheet {
   background: #ffffff !important;
   color: #1c2434 !important;

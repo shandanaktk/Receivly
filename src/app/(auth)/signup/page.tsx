@@ -16,18 +16,41 @@ function SignupForm() {
   const planParam = searchParams.get("plan");
   const selectedPlan = PLANS.find((p) => p.id === planParam);
 
-  const [name, setName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setError(null);
+
+    const cleanFirstName = firstName.trim();
+    const cleanLastName = lastName.trim();
+
+    if (!cleanFirstName || !cleanLastName) {
+      setError("Please enter your first and last name.");
+      return;
+    }
+    if (!/^\S+@\S+\.\S+$/.test(email.trim())) {
+      setError("Please enter a valid work email.");
+      return;
+    }
+    if (password.length < 8) {
+      setError("Your password must be at least 8 characters.");
+      return;
+    }
+    if (password !== confirmPassword) {
+      setError("The passwords you entered do not match.");
+      return;
+    }
+
     setLoading(true);
     try {
-      await signup(name.trim(), email.trim(), password);
+      await signup(`${cleanFirstName} ${cleanLastName}`, email.trim(), password);
       if (selectedPlan) window.sessionStorage.setItem("receivly_pending_plan", selectedPlan.id);
       const verifyUrl = planParam ? `/verify-email?plan=${planParam}` : "/verify-email";
       router.push(verifyUrl);
@@ -40,7 +63,7 @@ function SignupForm() {
 
   return (
     <div className="w-full">
-      <p className="text-xs font-semibold uppercase tracking-[.18em] text-[#e53690]">Start with clarity</p>
+      <p className="auth-dark-white text-xs font-semibold uppercase tracking-[.18em] text-[#e53690]">Start with clarity</p>
       <h1 className="mt-2 text-[2.75rem] leading-none sm:text-[3.3rem]">Create your account</h1>
       <p className="mt-2 text-[13px] text-foreground/60">
         Bring your invoices together and set a better follow-up rhythm.
@@ -54,15 +77,32 @@ function SignupForm() {
       ) : null}
 
       <form onSubmit={handleSubmit} className="mt-6 space-y-3" noValidate>
-        <Input
-          label="Full name"
-          name="name"
-          type="text"
-          autoComplete="name"
-          required
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Input
+            label="First name"
+            name="firstName"
+            type="text"
+            autoComplete="given-name"
+            required
+            value={firstName}
+            onChange={(e) => {
+              setFirstName(e.target.value);
+              setError(null);
+            }}
+          />
+          <Input
+            label="Last name"
+            name="lastName"
+            type="text"
+            autoComplete="family-name"
+            required
+            value={lastName}
+            onChange={(e) => {
+              setLastName(e.target.value);
+              setError(null);
+            }}
+          />
+        </div>
         <Input
           label="Work email"
           name="email"
@@ -70,7 +110,10 @@ function SignupForm() {
           autoComplete="email"
           required
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            setError(null);
+          }}
         />
         <Input
           label="Password"
@@ -81,7 +124,23 @@ function SignupForm() {
           minLength={8}
           hint="At least 8 characters"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e) => {
+            setPassword(e.target.value);
+            setError(null);
+          }}
+        />
+        <Input
+          label="Confirm password"
+          name="confirmPassword"
+          type="password"
+          autoComplete="new-password"
+          required
+          minLength={8}
+          value={confirmPassword}
+          onChange={(e) => {
+            setConfirmPassword(e.target.value);
+            setError(null);
+          }}
         />
 
         {error ? (
@@ -109,7 +168,7 @@ function SignupForm() {
 
       <p className="mt-4 text-center text-[13px] text-foreground/55">
         Already have an account?{" "}
-        <Link href="/login" className="text-[#c084fc] hover:underline">
+        <Link href="/login" className="auth-dark-white text-[#c084fc] hover:underline">
           Log in
         </Link>
       </p>
