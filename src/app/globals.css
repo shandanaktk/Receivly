@@ -364,6 +364,38 @@ html[data-theme="dark"] .onboarding-step-dot[aria-current="step"] { border-color
   --sheet-accent: #111184;
 }
 html[data-theme="dark"] .invoice-sheet { color: #1c2434 !important; background: #ffffff !important; }
+
+.collector-tab-icon,
+.role-mark {
+  color: #111184;
+  background-color: rgba(17, 17, 132, 0.1);
+}
+html[data-theme="dark"] .collector-tab-icon,
+html[data-theme="dark"] .role-mark {
+  color: #f4f4ff;
+  background-color: rgba(228, 228, 255, 0.2);
+}
+.collector-tab-icon.is-active,
+.role-mark.is-active,
+html[data-theme="dark"] .collector-tab-icon.is-active,
+html[data-theme="dark"] .role-mark.is-active {
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.2);
+}
+.brand-ink { color: #111184; }
+html[data-theme="dark"] .brand-ink { color: #ececff; }
+.brand-chip {
+  color: #111184;
+  background-color: rgba(17, 17, 132, 0.08);
+}
+html[data-theme="dark"] .brand-chip {
+  color: #f7f7ff;
+  background-color: rgba(228, 228, 255, 0.16);
+}
+.brand-bar { background-color: #111184; }
+html[data-theme="dark"] .brand-bar { background-color: #c8c8ff; }
+.brand-track { background-color: rgba(17, 17, 132, 0.12); }
+html[data-theme="dark"] .brand-track { background-color: rgba(228, 228, 255, 0.16); }
 .invoice-sheet .invoice-faint { color: #64748b !important; }
 .invoice-sheet .invoice-ink { color: #0f172a !important; }
 .invoice-sheet .invoice-line { border-color: #e7e9f0; }

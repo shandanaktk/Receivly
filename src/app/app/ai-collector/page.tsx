@@ -303,11 +303,7 @@ export default function AiCollectorPage() {
                           : "text-foreground/65 hover:bg-foreground/[0.05] hover:text-foreground"
                       }`}
                     >
-                      <span
-                        className={`grid h-9 w-9 shrink-0 place-items-center rounded-lg ${
-                          selectedTab ? "bg-white/15" : "bg-[#111184]/8 text-[#111184] dark:text-[#a9a9ff]"
-                        }`}
-                      >
+                      <span className={`collector-tab-icon grid h-9 w-9 shrink-0 place-items-center rounded-lg ${selectedTab ? "is-active" : ""}`}>
                         <Icon size={18} strokeWidth={1.9} aria-hidden />
                       </span>
                       <span className="text-[13px] font-bold leading-5">{tab.label}</span>
@@ -532,8 +528,8 @@ export default function AiCollectorPage() {
               ) : null}
 
               {activeTab === "preview" ? (
-                <div className="space-y-6">
-                  <div className="grid gap-5 sm:grid-cols-2">
+                <div className="min-w-0 space-y-6">
+                  <div className="max-w-xl">
                     <Select
                       label="Invoice"
                       value={selected?.id || ""}
@@ -543,26 +539,30 @@ export default function AiCollectorPage() {
                         label: `${invoice.number} · ${formatMoney(invoice.balance, invoice.currency)}`,
                       }))}
                     />
-                    <div>
-                      <p className="mb-1.5 text-xs font-medium text-foreground/80">Reminder stage</p>
-                      <div className="flex gap-2 overflow-x-auto pb-1">
+                  </div>
+                  <div className="min-w-0">
+                    <p className="mb-2 text-xs font-medium text-foreground/80">Reminder stage</p>
+                    {stages.length === 0 ? (
+                      <p className="text-xs text-foreground/50">Add stage timing under Stages & exclusions to preview a reminder.</p>
+                    ) : (
+                      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
                         {stages.map((value) => (
                           <button
                             key={value}
                             type="button"
                             onClick={() => setDay(value)}
-                            className={`shrink-0 rounded-lg border px-3 py-2 text-left text-xs transition ${
+                            className={`min-w-0 rounded-lg border px-3 py-2.5 text-left text-xs transition ${
                               day === value
                                 ? "border-[#111184] bg-[#111184] text-white"
-                                : "border-foreground/10 text-foreground/65 hover:border-[#111184]/35"
+                                : "border-foreground/10 text-foreground/70 hover:border-[#111184]/35"
                             }`}
                           >
                             <span className="block font-bold">{value > 0 ? `+${value}` : value}</span>
-                            <span className={day === value ? "text-white/75" : "text-foreground/55"}>{stageTitle(value)}</span>
+                            <span className={`mt-0.5 block leading-4 ${day === value ? "text-white/80" : "text-foreground/55"}`}>{stageTitle(value)}</span>
                           </button>
                         ))}
                       </div>
-                    </div>
+                    )}
                   </div>
 
                   {preview && selected ? (
@@ -580,7 +580,7 @@ export default function AiCollectorPage() {
                         <p className="text-xs font-semibold">{ws.senderName} &lt;{ws.gmailEmail || ws.replyTo}&gt;</p>
                         <p className="gmail-muted text-xs">to {customer?.name} &lt;{customer?.email}&gt;</p>
                         <p className="mt-3 font-semibold">{preview.subject}</p>
-                        <p className="mt-2 whitespace-pre-wrap leading-relaxed">{preview.body}</p>
+                        <p className="mt-2 whitespace-pre-wrap break-words leading-relaxed">{preview.body}</p>
                       </article>
                     </div>
                   ) : (
@@ -600,7 +600,7 @@ export default function AiCollectorPage() {
                       {selected ? (
                         <>
                           Due {formatDate(selected.dueDate)} ·{" "}
-                          <Link href={`/app/invoices/${selected.id}`} className="font-bold text-[#111184] hover:underline">
+                          <Link href={`/app/invoices/${selected.id}`} className="brand-ink font-bold hover:underline">
                             Open {selected.number}
                           </Link>
                         </>

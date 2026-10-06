@@ -5,7 +5,7 @@ import { ThemeToggle } from "@/components/shared/ThemeToggle";
 import { useAuth } from "@/contexts/AuthContext";
 import { api } from "@/lib/api";
 import { cn } from "@/lib/utils";
-import { Bell, Bot, ChartNoAxesCombined, ChevronsLeft, ChevronsRight, ClipboardCheck, CreditCard, FileText, LayoutDashboard, LogOut, Menu, MessageSquareText, Settings2, Users, X } from "lucide-react";
+import { Bell, Bot, ChartNoAxesCombined, ChevronsLeft, ChevronsRight, ClipboardCheck, CreditCard, Eye, FileText, Landmark, LayoutDashboard, LogOut, Menu, MessageSquareText, Settings2, Shield, UserRound, Users, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { type ReactNode, useEffect, useState } from "react";
@@ -26,6 +26,12 @@ const groups = [
     { href: "/app/billing", label: "Billing & plan", icon: CreditCard },
     { href: "/app/notifications", label: "Notifications", icon: Bell },
     { href: "/app/settings", label: "Settings", icon: Settings2 },
+  ] },
+  { label: "Role demos", links: [
+    { href: "/app/admin", label: "Admin", icon: Shield },
+    { href: "/app/finance", label: "Finance manager", icon: Landmark },
+    { href: "/app/viewer", label: "Viewer", icon: Eye },
+    { href: "/app/member", label: "Member", icon: UserRound },
   ] },
 ];
 
